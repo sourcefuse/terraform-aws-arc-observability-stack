@@ -60,6 +60,7 @@ variable "kibana_config" {
   description = "Configuration for Kibana"
   type = object({
     name                = optional(string, "kibana")
+    replica_count       = optional(string, 3)
     elasticsearch_url   = optional(string, "https://elasticsearch-master:9200")
     http_port           = optional(string, "5601")
     user                = optional(string, "elastic")
@@ -80,7 +81,3 @@ variable "tags" {
   description = "(optional) Tags for AWS resources"
   default     = {}
 }
-
-# TODO:
-# replicas: 3
-# minimumMasterNodes: 2

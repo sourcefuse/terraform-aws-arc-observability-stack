@@ -75,6 +75,7 @@ variable "elasticsearch_config" {
 
     kibana_config = object({
       name                = optional(string, "kibana")
+      replica_count       = optional(string, 3)
       http_port           = optional(string, "5601")
       user                = optional(string, "elastic")
       log_level           = optional(string, "info") // values include Options are all, fatal, error, warn, info, debug, trace, off

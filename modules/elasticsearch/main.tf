@@ -131,6 +131,7 @@ resource "helm_release" "kibana" {
   values = [
     templatefile("${path.module}/kibana-values.tftpl", {
       name              = var.kibana_config.name
+      replica_count     = var.kibana_config.replica_count
       elasticsearch_url = var.kibana_config.elasticsearch_url
       user              = var.kibana_config.user
       http_port         = var.kibana_config.http_port

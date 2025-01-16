@@ -9,7 +9,7 @@ elasticsearchCertificateSecret: elasticsearch-master-certs
 elasticsearchCredentialSecret: elasticsearch-master-credentials
 elasticsearchSSLVerificationMode: "none"  # Add this if you are using self-signed certs
 
-replicas: 1
+replicas: ${replica_count}
 
 # Extra environment variables to append to this nodeGroup
 # This will be appended to the current 'env:' key. You can use any of the kubernetes env
