@@ -52,7 +52,7 @@ variable "cluster_config" {
     memory_request = optional(string, "2Gi")
     storage_class  = optional(string, "gp2")
     storage        = optional(string, "30Gi")
-    replicas       = optional(string, 3)
+    replica_count  = optional(string, 3)
   })
 }
 

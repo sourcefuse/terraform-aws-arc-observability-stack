@@ -90,7 +90,7 @@ variable "grafana_config" {
     name                = optional(string, "grafana")
     replicas            = optional(number, 1)
     ingress_enabled     = optional(bool, false)
-    lb_visibility       = optional(string, "internal") # Options: "internal" or "internet-facing"
+    lb_visibility       = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
     aws_certificate_arn = optional(string, "")
     ingress_host        = optional(string, "")
     admin_user          = optional(string, "admin")
@@ -99,6 +99,10 @@ variable "grafana_config" {
     memory_limit        = optional(string, "128Mi")
     cpu_request         = optional(string, "100m")
     memory_request      = optional(string, "128Mi")
+    dashboard_list = optional(list(object({
+      name = string
+      json = string
+    })), [])
   })
   default = {
     ingress_enabled     = false
@@ -112,4 +116,43 @@ variable "tags" {
   type        = map(string)
   description = "(optional) Tags for AWS resources"
   default     = {}
+}
+
+variable "blackbox_exporter_config" {
+  description = "Configuration for Blackbox exporter."
+  type = object({
+    name           = optional(string, "blackbox-exporter")
+    replica_count  = optional(number, 1)
+    cpu_limit      = optional(string, "100m")
+    memory_limit   = optional(string, "500Mi")
+    cpu_request    = optional(string, "100m")
+    memory_request = optional(string, "50Mi")
+    monitoring_targets = list(object({
+      name                     = string                         # Target name (e.g., google)
+      url                      = string                         # URL to monitor (e.g., https://google.com)
+      scrape_interval          = optional(string, "60s")        # Scrape interval (e.g., 60s)
+      scrape_timeout           = optional(string, "60s")        # Scrape timeout (e.g., 60s)
+      status_code_pattern_list = optional(string, "[http_2xx]") # Blackbox module to use (e.g., http_2xx)
+    }))
+  })
+  default = {
+    name               = "blackbox-exporter"
+    monitoring_targets = []
+  }
+}
+
+variable "alertmanager_config" {
+  description = "Configuration for AlertManager exporter."
+  type = object({
+    name            = optional(string, "alertmanager")
+    replica_count   = optional(number, 1)
+    cpu_limit       = optional(string, "100m")
+    memory_limit    = optional(string, "128Mi")
+    cpu_request     = optional(string, "10m")
+    memory_request  = optional(string, "32Mi")
+    alert_rule_yaml = optional(string, "")
+  })
+  default = {
+    name = "alertmanager"
+  }
 }

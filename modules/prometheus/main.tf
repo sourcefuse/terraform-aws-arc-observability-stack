@@ -4,7 +4,7 @@ resource "random_password" "grafana" {
   upper            = true
   lower            = true
   numeric          = true
-  override_special = "!@#$%^_=+<>"
+  override_special = "!@#$%_=+<>"
 }
 
 resource "aws_ssm_parameter" "grafana_creds" {
@@ -46,6 +46,9 @@ resource "helm_release" "prometheus" {
       storage                   = var.storage
       storage_class             = var.storage_class
       retention_period          = var.retention_period
+      monitoring_targets        = var.blackbox_exporter_config.monitoring_targets
+      blackbox_exporter_svc     = "${var.blackbox_exporter_config.name}.${var.k8s_namespace}.svc.cluster.local"
+      alertmanager_config       = var.alertmanager_config
     })
   ]
 
@@ -59,6 +62,7 @@ resource "helm_release" "grafana" {
   repository = "https://grafana.github.io/helm-charts"
   chart      = "grafana"
   version    = "8.8.2"
+
 
   values = [
     templatefile("${path.module}/grafana-values.tftpl", {
@@ -75,13 +79,58 @@ resource "helm_release" "grafana" {
       lb_visibility       = var.grafana_config.lb_visibility
       aws_certificate_arn = var.grafana_config.aws_certificate_arn
       prometheus_endpoint = var.name // This is the Prometheus service name
-      cpu_limit           = var.grafana_config.cpu_limit
-      memory_limit        = var.grafana_config.memory_limit
-      cpu_request         = var.grafana_config.cpu_request
-      memory_request      = var.grafana_config.memory_request
     })
   ]
 
   force_update = true
   depends_on   = [kubernetes_namespace.this]
+}
+
+resource "kubernetes_config_map" "dashboards" {
+
+  for_each = { for idx, value in var.grafana_config.dashboard_list : value.name => value }
+  metadata {
+    name      = each.value.name
+    namespace = var.k8s_namespace
+    labels = {
+      grafana_dashboard = "1"
+    }
+  }
+  data = {
+    "${each.value.name}.json" = each.value.json
+  }
+}
+
+resource "helm_release" "blackbox_exporter" {
+  name       = var.blackbox_exporter_config.name
+  namespace  = var.k8s_namespace
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "prometheus-blackbox-exporter"
+  version    = "9.1.0"
+
+  values = [
+    templatefile("${path.module}/blackbox-exporter-values.tftpl", {
+      name               = var.blackbox_exporter_config.name
+      replica_count      = var.blackbox_exporter_config.replica_count
+      cpu_limit          = var.blackbox_exporter_config.cpu_limit
+      memory_limit       = var.blackbox_exporter_config.memory_limit
+      cpu_request        = var.blackbox_exporter_config.cpu_request
+      memory_request     = var.blackbox_exporter_config.memory_request
+      monitoring_targets = var.blackbox_exporter_config.monitoring_targets
+    })
+  ]
+
+  force_update = true
+  depends_on   = [kubernetes_namespace.this]
+}
+
+
+data "kubernetes_ingress_v1" "this" {
+  count = var.grafana_config.ingress_enabled ? 1 : 0
+  metadata {
+    name      = var.grafana_config.name
+    namespace = var.k8s_namespace
+  }
+
+  depends_on = [helm_release.grafana]
 }

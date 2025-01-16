@@ -17,3 +17,8 @@ output "host" {
   description = "Elastic Search host"
   value       = var.name
 }
+
+output "lb_arn" {
+  description = "Kibana ingress loadbalancer ARN"
+  value       = var.kibana_config.ingress_enabled ? data.kubernetes_ingress_v1.this[0].status[0].load_balancer[0].ingress[0].hostname : null
+}

@@ -520,14 +520,14 @@ sidecar:
     # Sets the size limit of the alert sidecar emptyDir volume
     sizeLimit: {}
   dashboards:
-    enabled: false
+    enabled: true
     # Additional environment variables for the dashboards sidecar
     env: {}
     SCProvider: true
     # label that the configmaps with dashboards are marked with
     label: grafana_dashboard
     # value of label that the configmaps with dashboards are set to
-    labelValue: ""
+    labelValue: "1"
     # Log level. Can be one of: DEBUG, INFO, WARN, ERROR, CRITICAL.
     # logLevel: INFO
     # folder in the pod that should hold the collected dashboards (unless `defaultFolderName` is set)

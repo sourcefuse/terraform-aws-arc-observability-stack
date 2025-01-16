@@ -23,7 +23,7 @@ terraform {
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.0.0"
+      version = "2.17.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -54,10 +54,15 @@ provider "helm" {
   }
 }
 
+provider "aws" {
+  region = var.region
+}
 
 /*
 Pre req
 - CSI driver is deployed on EKS cluster, this is required for Elasticsearch
+- AWS Loadbalancer controller is installed
+
 */
 module "efk_es_fluentd" {
   source = "../../"
@@ -102,67 +107,24 @@ module "efk_es_fluentd" {
       memory_request = "500Mi"
 
       ingress_enabled     = true
-      aws_certificate_arn = "arn:aws:acm:us-east-1:884360309640:certificate/7e4d8c74-46e7-4d99-a523-6db4336d9a0a" // TODO: remove
-      ingress_host        = "kibana.arc-poc.link"                                                                 // TODO: remove
+      aws_certificate_arn = var.aws_certificate_arn
+      ingress_host        = var.ingress_host
 
     }
+  }
 
-    fluentd_config = {
-      k8s_namespace = {
-        name   = "logging"
-        create = false
-      }
-      name                = "fluentd1"
-      search_engine       = "elasticsearch"
-      cpu_limit           = "100m"
-      memory_limit        = "512Mi"
-      cpu_request         = "100m"
-      memory_request      = "128Mi"
-      logstash_dateformat = "%Y.%m.%d"
-      log_level           = "info"
+  fluentd_config = {
+    k8s_namespace = {
+      name   = "logging"
+      create = false
     }
-
-    fluentbit_config = {
-      k8s_namespace = {
-        name   = "logging"
-        create = false
-      }
-      name                = "fluent-bit"
-      search_engine       = "elasticsearch"
-      cpu_limit           = "200m"
-      memory_limit        = "512Mi"
-      cpu_request         = "100m"
-      memory_request      = "200Mi"
-      logstash_dateformat = "%Y.%m.%d"
-      log_level           = "info"
-    }
-
-    prometheus_config = {
-      k8s_namespace = {
-        name   = "metrics1"
-        create = true
-      }
-      log_level = "info"
-      resources = {
-        cpu_limit      = "100m"
-        memory_limit   = "512Mi"
-        cpu_request    = "100m"
-        memory_request = "128Mi"
-      }
-      replicas                  = 1
-      storage                   = "8Gi"
-      enable_kube_state_metrics = true
-      enable_node_exporter      = true
-      retention_period          = "30d"
-
-      grafana_config = {
-        ingress_enabled     = false
-        replicas            = 1
-        ingress_enabled     = true
-        ingress_host        = "grafana.arc-poc.link"
-        aws_certificate_arn = "arn:aws:acm:us-east-1:884360309640:certificate/7e4d8c74-46e7-4d99-a523-6db4336d9a0a" // TODO: remove
-        lb_visibility       = "internet-facing"
-      }
-    }
+    name                = "fluentd"
+    search_engine       = "elasticsearch"
+    cpu_limit           = "100m"
+    memory_limit        = "512Mi"
+    cpu_request         = "100m"
+    memory_request      = "128Mi"
+    logstash_dateformat = "%Y.%m.%d"
+    log_level           = "info"
   }
 }

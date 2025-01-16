@@ -695,18 +695,19 @@ scrapeConfigFiles: []
 serverFiles:
   ## Alerts configuration
   ## Ref: https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/
-  alerting_rules.yml: {}
-  # groups:
-  #   - name: Instances
-  #     rules:
-  #       - alert: InstanceDown
-  #         expr: up == 0
-  #         for: 5m
-  #         labels:
-  #           severity: page
-  #         annotations:
-  #           description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.'
-  #           summary: 'Instance {{ $labels.instance }} down'
+  alerting_rules.yml:
+  groups:
+    - name: KubernetesPodNotHealthy
+      rules:
+        - alert: KubernetesPodNotHealthy
+          expr:  min_over_time(sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"})[1m:1m]) > 0
+          for: 5m
+          labels:
+            severity: page
+          annotations:
+            impact: $${buisnessimpact_priority["KubernetesPodNotHealthy"]["BuisnessImpact"]["$${buisnessimpact_priority["KubernetesPodNotHealthy"]["Priority"]}"]}
+            summary: Kubernetes Pod ({{ $labels.pod }}) is not healthy
+            description: "Pod ({{ $labels.pod }}) has been in a non-ready state for longer than 5 minutes."
   ## DEPRECATED DEFAULT VALUE, unless explicitly naming your files, please use alerting_rules.yml
   alerts: {}
 
@@ -1139,21 +1140,26 @@ serverFiles:
 # adds additional scrape configs to prometheus.yml
 # must be a string so you have to add a | after extraScrapeConfigs:
 # example adds prometheus-blackbox-exporter scrape config
-extraScrapeConfigs: ""
-  # - job_name: 'prometheus-blackbox-exporter'
-  #   metrics_path: /probe
-  #   params:
-  #     module: [http_2xx]
-  #   static_configs:
-  #     - targets:
-  #       - https://example.com
-  #   relabel_configs:
-  #     - source_labels: [__address__]
-  #       target_label: __param_target
-  #     - source_labels: [__param_target]
-  #       target_label: instance
-  #     - target_label: __address__
-  #       replacement: prometheus-blackbox-exporter:9115
+extraScrapeConfigs: |
+%{ for target in monitoring_targets ~}
+  - job_name: '${target.name}-blackbox-exporter'
+    scrape_interval: ${target.scrape_interval}
+    scrape_timeout: ${target.scrape_timeout}
+    metrics_path: /probe
+    params:
+      module: ${target.status_code_pattern_list}
+    static_configs:
+      - targets:
+        - ${target.url}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: ${blackbox_exporter_svc}:9115
+%{ endfor ~}
+
 
 # Adds option to add alert_relabel_configs to avoid duplicate alerts in alertmanager
 # useful in H/A prometheus with different external labels but the same alerts
@@ -1190,10 +1196,28 @@ extraManifests: []
 alertmanager:
   ## If false, alertmanager will not be installed
   ##
-  enabled: false
+  enabled: true
+  additionalPrometheusRulesMap:
+    rule-name:
+      groups:
+      - name: KubernetesPodNotHealthy
+        rules:
+          - alert: KubernetesPodNotHealthy
+            expr: min_over_time(sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"})[1m:1m]) > 0
+            for: 1m
+            labels:
+              severity: 'critical'
+            annotations:
+              description: ' The Number of pods from the namespace {{ $labels.namespace }} is lower than the expected 4. '
+              summary: 'Pod {{ $labels.pod }} down'
 
   persistence:
+    enabled: true
     size: 2Gi
+    storageClass: ${storage_class}
+    accessModes:
+      - ReadWriteOnce
+
 
   podSecurityContext:
     runAsUser: 65534

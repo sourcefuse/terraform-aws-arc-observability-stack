@@ -112,7 +112,7 @@ resource "helm_release" "elasticsearch" {
       memory_request = var.cluster_config.memory_request
       storage        = var.cluster_config.storage
       storage_class  = var.cluster_config.storage_class
-      replicas       = var.cluster_config.replicas
+      replica_count  = var.cluster_config.replica_count
     })
   ]
 
@@ -150,4 +150,13 @@ resource "helm_release" "kibana" {
   force_update = true
 
   depends_on = [kubernetes_namespace.this, kubernetes_secret.elasticsearch_tls, helm_release.elasticsearch]
+}
+
+data "kubernetes_ingress_v1" "this" {
+  count = var.kibana_config.ingress_enabled ? 1 : 0
+  metadata {
+    name      = var.kibana_config.name
+    namespace = var.k8s_namespace
+  }
+  depends_on = [helm_release.kibana]
 }

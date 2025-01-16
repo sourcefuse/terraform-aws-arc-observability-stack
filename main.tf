@@ -48,7 +48,7 @@ module "fluentd" {
 module "fluentbit" {
   source = "./modules/fluent-bit"
 
-  #count = var.log_aggregator == "fluent-bit" ? 1 : 0 TODO:
+  count = var.log_aggregator == "fluent-bit" ? 1 : 0
 
   name                 = var.fluentbit_config.name
   k8s_namespace        = var.fluentbit_config.k8s_namespace.name
@@ -77,7 +77,7 @@ module "fluentbit" {
 module "prometheus" {
   source = "./modules/prometheus"
 
-  #count = var.monitoring_system == "prometheus" ? 1 : 0 TODO:
+  count = var.metrics_monitoring_system == "prometheus" ? 1 : 0
 
   environment = var.environment
   namespace   = var.namespace
@@ -98,5 +98,12 @@ module "prometheus" {
     cpu_request    = var.prometheus_config.cpu_request
     memory_request = var.prometheus_config.memory_request
   }
+
+  grafana_config = var.prometheus_config.grafana_config
+
+  blackbox_exporter_config = var.prometheus_config.blackbox_exporter_config
+
+  alertmanager_config = var.prometheus_config.alertmanager_config
+
   tags = var.tags
 }

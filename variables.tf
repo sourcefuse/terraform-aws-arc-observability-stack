@@ -17,17 +17,31 @@ variable "tags" {
 variable "search_engine" {
   type        = string
   description = "(optional) Search engine for logs"
-  default     = "elasticsearch" // elasticsearch
+  default     = null // elasticsearch
   validation {
-    condition     = contains(["elasticsearch", "opensearch"], var.search_engine)
-    error_message = "Invalid value for search_engine. Allowed values are 'elasticsearch' and 'opensearch'."
+    condition     = var.search_engine == null ? true : contains(["elasticsearch", "opensearch", null], var.search_engine)
+    error_message = "Invalid value for search_engine. Allowed values are 'elasticsearch' , 'opensearch' and null . null - To disable installing Elasticsearch"
   }
 }
 
-variable "monitoring_system" {
+variable "metrics_monitoring_system" {
   type        = string
   description = "Monotoring system for metrics"
-  default     = "prometheus"
+  default     = null
+  validation {
+    condition     = var.metrics_monitoring_system == null ? true : contains(["prometheus", null], var.metrics_monitoring_system)
+    error_message = "Invalid value for metrics_monitoring_system. Allowed values are 'prometheus' and null . null - To disable installing Prometheus or other systems"
+  }
+}
+
+variable "log_aggregator" {
+  type        = string
+  description = "(optional) Log aggregator to choose"
+  default     = null
+  validation {
+    condition     = var.log_aggregator == null ? true : contains(["fluentd", "fluent-bit", null], var.log_aggregator)
+    error_message = "Invalid value for log_aggregator. Allowed values are 'fluentd' and 'fluent-bit'. To disable installing Log aggregator"
+  }
 }
 
 variable "elasticsearch_config" {
@@ -56,7 +70,7 @@ variable "elasticsearch_config" {
       memory_request = optional(string, "2Gi")     # Memory request for the Elasticsearch container
       storage_class  = optional(string, "gp2")
       storage        = optional(string, "30Gi") # Persistent volume storage for Elasticsearch
-      replicas       = optional(string, 3)
+      replica_count  = optional(string, 3)
     })
 
     kibana_config = object({
@@ -99,7 +113,7 @@ variable "elasticsearch_config" {
       cpu_request    = "1000m"
       memory_request = "2Gi"
       storage        = "30Gi"
-      replicas       = 3
+      replica_count  = 3
     }
 
     kibana_config = {
@@ -116,17 +130,6 @@ variable "elasticsearch_config" {
       ingress_host      = ""
 
     }
-  }
-}
-
-
-variable "log_aggregator" {
-  type        = string
-  description = "(optional) Log aggregator to choose"
-  default     = "fluentd"
-  validation {
-    condition     = contains(["fluentd", "fluent-bit"], var.log_aggregator)
-    error_message = "Invalid value for log_aggregator. Allowed values are 'fluentd' and 'fluent-bit'."
   }
 }
 
@@ -220,7 +223,7 @@ variable "prometheus_config" {
       name                = optional(string, "grafana")
       replicas            = optional(number, 1)
       ingress_enabled     = optional(bool, false)
-      lb_visibility       = optional(string, "internal") # Options: "internal" or "internet-facing"
+      lb_visibility       = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
       aws_certificate_arn = optional(string, "")
       ingress_host        = optional(string, "")
       admin_user          = optional(string, "admin")
@@ -228,6 +231,36 @@ variable "prometheus_config" {
       memory_limit        = optional(string, "128Mi")
       cpu_request         = optional(string, "100m")
       memory_request      = optional(string, "128Mi")
+      dashboard_list = optional(list(object({
+        name = string
+        json = string
+      })), [])
+    })
+
+    blackbox_exporter_config = object({
+      name           = optional(string, "blackbox-exporter")
+      replica_count  = optional(number, 1)
+      cpu_limit      = optional(string, "100m")
+      memory_limit   = optional(string, "500Mi")
+      cpu_request    = optional(string, "100m")
+      memory_request = optional(string, "50Mi")
+      monitoring_targets = list(object({
+        name                     = string                         # Target name (e.g., google)
+        url                      = string                         # URL to monitor (e.g., https://google.com)
+        scrape_interval          = optional(string, "60s")        # Scrape interval (e.g., 60s)
+        scrape_timeout           = optional(string, "60s")        # Scrape timeout (e.g., 60s)
+        status_code_pattern_list = optional(string, "[http_2xx]") # Blackbox module to use (e.g., http_2xx)
+      }))
+    })
+
+    alertmanager_config = object({
+      name            = optional(string, "alertmanager")
+      replica_count   = optional(number, 1)
+      cpu_limit       = optional(string, "100m")
+      memory_limit    = optional(string, "128Mi")
+      cpu_request     = optional(string, "10m")
+      memory_request  = optional(string, "32Mi")
+      alert_rule_yaml = optional(string, "")
     })
   })
   default = {
@@ -253,6 +286,13 @@ variable "prometheus_config" {
       lb_visibility       = "internet-facing"
       admin_user          = "admin"
       prometheus_endpoint = "prometheus"
+    }
+    blackbox_exporter_config = {
+      name               = "blackbox-exporter"
+      monitoring_targets = []
+    }
+    alertmanager_config = {
+      name = "alertmanager"
     }
   }
 
