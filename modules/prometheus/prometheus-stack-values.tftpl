@@ -1,0 +1,274 @@
+## Create default rules for monitoring the cluster
+##
+fullnameOverride: "${name}"
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: false
+    general: true
+    k8s: true
+    kubeApiserver: true
+    kubeApiserverAvailability: true
+    kubeApiserverError: true
+    kubeApiserverSlos: true
+    kubelet: true
+    kubePrometheusGeneral: true
+    kubePrometheusNodeAlerting: true
+    kubePrometheusNodeRecording: true
+    kubernetesAbsent: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeScheduler: false
+    kubeStateMetrics: true
+    network: true
+    node: true
+    prometheus: true
+    prometheusOperator: true
+    time: true
+
+global:
+  rbac:
+    create: true
+    pspEnabled: true
+
+${custom_alerts}
+# additionalPrometheusRulesMap:
+#   rule-name:
+#     groups:
+#       - name: faro custom rules
+#         rules:
+#         - alert: KubernetesPodNotHealthy
+#           expr: min_over_time(sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"})[1m:1m]) > 0
+#           for: 5m
+#           labels:
+#             severity: alert
+#             priority: P1
+#           annotations:
+#             summary: Kubernetes Pod ({{ $labels.pod }}) is not healthy
+#             description: "Pod ({{ $labels.pod }}) has been in a non-ready state for longer than 5 minutes."
+
+
+
+## Configuration for alertmanager
+## ref: https://prometheus.io/docs/alerting/alertmanager/
+alertmanager:
+  enabled: true
+  serviceAccount:
+    create: true
+  alertmanagerSpec:
+    image:
+      registry: quay.io
+      repository: prometheus/alertmanager
+      sha: ""
+      tag: v0.28.0
+    replicas: 1
+    retention: 168h
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp2
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+
+${alert_notification_settings}
+  # config:
+  #   global:
+  #   templates:
+  #   - '/etc/alertmanager/*.tmpl'
+  #   route:
+  #     receiver: alert-emailer
+  #     group_by: [...]
+  #     group_wait: 10s
+  #     repeat_interval: 30m
+  #     routes:
+  #       - receiver: opsgenie
+  #         match:
+  #           severity: alert
+  #         group_wait: 10s
+  #         repeat_interval: 1m
+
+  #   receivers:
+  #   - name: alert-emailer
+  #     email_configs:
+  #     - to: demo@devopscube.com
+  #       send_resolved: false
+  #       from: from-email@email.com
+  #       smarthost: smtp.eample.com:25
+  #       require_tls: false
+  #   - name: opsgenie
+  #     opsgenie_configs:
+  #     - api_key: "dvdf"
+  #       api_url: https://api.opsgenie.com
+  #       send_resolved: true
+  #       priority: P1
+
+## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+grafana:
+  enabled: true
+  defaultDashboardsEnabled: true
+  rbac:
+    create: true
+    pspEnabled: true
+    namespaced: true
+  serviceAccount:
+    create: true
+  replicas: 1
+  autoscaling:
+    enabled: false
+  image:
+    repository: grafana/grafana
+    tag: 11.4.0
+    sha: ""
+    pullPolicy: IfNotPresent
+  service:
+    enabled: true
+%{ if ingress_enabled == true ~}
+    type: NodePort
+%{ else ~}
+    type: ClusterIP
+%{ endif ~}
+    port: 80
+    targetPort: 3000
+  adminUser: ${admin_user}
+  adminPassword: ${admin_password}
+  ingress:
+    enabled: ${ingress_enabled}
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: ${lb_visibility}
+      alb.ingress.kubernetes.io/group.order: "40"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/certificate-arn: ${aws_certificate_arn}
+      alb.ingress.kubernetes.io/healthcheck-path: "/api/health"
+    hosts:
+    - ${ingress_host}
+    paths:
+    - "/"
+    pathType: Prefix
+    tls: []
+
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+    datasources:
+      enabled: true
+      defaultDatasourceEnabled: true
+  persistence:
+    type: pvc
+    enabled: true
+    storageClassName: ${storage_class}
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+
+  grafana.ini: {}
+
+## Component scraped
+kubeApiServer:
+  enabled: true
+kubelet:
+  enabled: true
+kubeControllerManager:
+  enabled: false
+coreDns:
+  enabled: true
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: true
+kubeStateMetrics:
+  enabled: true
+
+## Configuration for kube-state-metrics subchart
+kube-state-metrics:
+  enabled: ${enable_kube_state_metrics}
+  rbac:
+    create: true
+  podSecurityPolicy:
+    enabled: true
+
+## Deploy node exporter as a daemonset to all nodes
+nodeExporter:
+  enabled: ${enable_node_exporter}
+
+## Configuration for prometheus-node-exporter subchart
+prometheus-node-exporter:
+
+## Manages Prometheus and Alertmanager components
+prometheusOperator:
+  enabled: true
+  tls:
+    enabled: true
+  serviceAccount:
+    create: true
+## Deploy a Prometheus instance
+##
+prometheus:
+  enabled: true
+  serviceAccount:
+    create: true
+  serviceMonitor:
+    selfMonitor: true
+  prometheusSpec:
+    logLevel: ${log_level}
+    scrapeInterval: "30s"
+    image:
+      registry: quay.io
+      repository: prometheus/prometheus
+      sha: ""
+      tag: v3.1.0
+    ## How long to retain metrics
+    retention: ${retention_period}
+    ## Maximum size of metrics
+    retentionSize: ""
+    replicas: ${replica_count}
+    storageSpec:
+    # Using PersistentVolumeClaim
+      volumeClaimTemplate:
+        spec:
+          storageClassName: ${storage_class}
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: ${storage}
+    additionalScrapeConfigs:
+%{ for target in monitoring_targets ~}
+      - job_name: '${target.name}-blackbox-exporter'
+        scrape_interval: ${target.scrape_interval}
+        scrape_timeout: ${target.scrape_timeout}
+        metrics_path: /probe
+        params:
+          module: ${target.status_code_pattern_list}
+        static_configs:
+          - targets:
+            - ${target.url}
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: ${blackbox_exporter_svc}:9115
+%{ endfor ~}
+
+  service:
+    port: 9090
+    targetPort: 9090
+    type: ClusterIP
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts: []
+    paths:
+    - "/-/healthy"
+    pathType: ImplementationSpecific
+    tls: []
