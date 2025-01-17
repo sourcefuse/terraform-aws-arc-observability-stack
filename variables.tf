@@ -209,7 +209,7 @@ variable "prometheus_config" {
       create = optional(bool, true)
     })
     log_level                 = optional(string, "info")
-    replicas                  = optional(number, 1)
+    replica_count             = optional(number, 1)
     storage                   = optional(string, "8Gi")
     storage_class             = optional(string, "gp2")
     enable_kube_state_metrics = optional(bool, true)
@@ -222,7 +222,7 @@ variable "prometheus_config" {
 
     grafana_config = object({
       name                = optional(string, "grafana")
-      replicas            = optional(number, 1)
+      replica_count       = optional(number, 1)
       ingress_enabled     = optional(bool, false)
       lb_visibility       = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
       aws_certificate_arn = optional(string, "")
@@ -255,13 +255,14 @@ variable "prometheus_config" {
     })
 
     alertmanager_config = object({
-      name            = optional(string, "alertmanager")
-      replica_count   = optional(number, 1)
-      cpu_limit       = optional(string, "100m")
-      memory_limit    = optional(string, "128Mi")
-      cpu_request     = optional(string, "10m")
-      memory_request  = optional(string, "32Mi")
-      alert_rule_yaml = optional(string, "")
+      name                        = optional(string, "alertmanager")
+      replica_count               = optional(number, 1)
+      cpu_limit                   = optional(string, "100m")
+      memory_limit                = optional(string, "128Mi")
+      cpu_request                 = optional(string, "10m")
+      memory_request              = optional(string, "32Mi")
+      custom_alerts               = optional(string, "")
+      alert_notification_settings = optional(string, "")
     })
   })
   default = {
@@ -276,7 +277,7 @@ variable "prometheus_config" {
       cpu_request    = "100m"
       memory_request = "128Mi"
     }
-    replicas                  = 1
+    replica_count             = 1
     storage                   = "8Gi"
     enable_kube_state_metrics = true
     enable_node_exporter      = true

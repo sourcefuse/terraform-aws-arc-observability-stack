@@ -26,6 +26,12 @@ variable "create_k8s_namespace" {
   default     = true
 }
 
+variable "replica_count" {
+  type        = number
+  description = "(optional) Number of replicas for Prometheus"
+  default     = 1
+}
+
 variable "log_level" {
   type        = string
   description = "(optional) Log level for prometheus service"
@@ -46,12 +52,6 @@ variable "resources" {
     cpu_request    = "100m"
     memory_request = "128Mi"
   }
-}
-
-variable "replicas" {
-  description = "The number of replicas to deploy."
-  type        = number
-  default     = 1
 }
 
 variable "storage" {
@@ -99,6 +99,7 @@ variable "grafana_config" {
     memory_limit        = optional(string, "128Mi")
     cpu_request         = optional(string, "100m")
     memory_request      = optional(string, "128Mi")
+    storage             = optional(string, "2Gi")
     dashboard_list = optional(list(object({
       name = string
       json = string
@@ -144,13 +145,14 @@ variable "blackbox_exporter_config" {
 variable "alertmanager_config" {
   description = "Configuration for AlertManager exporter."
   type = object({
-    name            = optional(string, "alertmanager")
-    replica_count   = optional(number, 1)
-    cpu_limit       = optional(string, "100m")
-    memory_limit    = optional(string, "128Mi")
-    cpu_request     = optional(string, "10m")
-    memory_request  = optional(string, "32Mi")
-    alert_rule_yaml = optional(string, "")
+    name                        = optional(string, "alertmanager")
+    replica_count               = optional(number, 1)
+    cpu_limit                   = optional(string, "100m")
+    memory_limit                = optional(string, "128Mi")
+    cpu_request                 = optional(string, "10m")
+    memory_request              = optional(string, "32Mi")
+    custom_alerts               = optional(string, "")
+    alert_notification_settings = optional(string, "")
   })
   default = {
     name = "alertmanager"

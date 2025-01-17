@@ -38,7 +38,7 @@ module "efk" {
 
 Integrate the module with your existing Terraform mono repo configuration, follow the steps below:
 
-1. Create a new folder in `terraform/` named `db`.
+1. Create a new folder in `terraform/` named `observability-stack`.
 2. Create the required files, see the [examples](https://github.com/sourcefuse/terraform-aws-arc-observability-stack/tree/main/examples/elasticsearch_fleuntd) to base off of.
 3. Configure with your backend
   - Create the environment backend configuration file: `config.<environment>.hcl`
@@ -67,11 +67,6 @@ For a list of outputs, see the README [Outputs](https://github.com/sourcefuse/te
 ### EFK Stack Usage
 
 For basic usage, see the [example](https://github.com/sourcefuse/terraform-aws-arc-observability-stack/tree/main/examples/elasticsearch_fleuntd) folder.
-
-This example will deploy following in EKS cluster:
-
-1. RDS Instance Example
-This example demonstrates deploying a single RDS instance using the module, configuring an Amazon RDS database with basic settings like instance class, storage, and connectivity. It showcases options for database engine, encryption, and CloudWatch monitoring for a standalone RDS database. Ideal for simple, production-ready RDS setups.
 
 ## Resources Deployed by the Module
 ### 1. Logging Stack (EFK)
@@ -104,7 +99,7 @@ If you encounter a bug or issue, please report it on the [GitHub repository](htt
 
 Understand the security considerations related to EKS cluster
 
-### Best Practices for Aurora database cluster
+### Best Practices for Observability stack
 
 Follow best practices to ensure secure Observability configurations:
 

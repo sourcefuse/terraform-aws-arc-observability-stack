@@ -85,7 +85,7 @@ module "prometheus" {
       memory_request = "128Mi"
     }
     replicas                  = 1
-    storage                   = "8Gi"
+    storage                   = "12Gi"
     enable_kube_state_metrics = true
     enable_node_exporter      = true
     retention_period          = "30d"
@@ -115,9 +115,59 @@ module "prometheus" {
     }
 
     alertmanager_config = {
-      name            = "alertmanager"
-      replica_count   = 1
-      alert_rule_yaml = ""
+      name          = "alertmanager"
+      replica_count = 1
+      custom_alerts = <<EOT
+# Preserve the indentation
+additionalPrometheusRulesMap:
+  rule-name:
+    groups:
+      - name: custom rules
+        rules:
+        - alert: KubernetesPodNotHealthy
+          expr: min_over_time(sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"})[1m:1m]) > 0
+          for: 5m
+          labels:
+            severity: alert
+            priority: P1
+          annotations:
+            summary: Kubernetes Pod ({{ $labels.pod }}) is not healthy
+            description: "Pod ({{ $labels.pod }}) has been in a non-ready state for longer than 5 minutes."
+EOT
+
+      alert_notification_settings = <<EOT
+# Preserve the indentation
+  config:
+    global:
+    templates:
+    - '/etc/alertmanager/*.tmpl'
+    route:
+      receiver: alert-emailer
+      group_by: [...]
+      group_wait: 10s
+      repeat_interval: 30m
+      routes:
+        - receiver: opsgenie
+          match:
+            severity: alert
+          group_wait: 10s
+          repeat_interval: 1m
+
+    receivers:
+    - name: alert-emailer
+      email_configs:
+      - to: demo@devopscube.com
+        send_resolved: false
+        from: from-email@email.com
+        smarthost: smtp.eample.com:25
+        require_tls: false
+    - name: opsgenie
+      opsgenie_configs:
+      - api_key: "dvdf"
+        api_url: https://api.opsgenie.com
+        send_resolved: true
+        priority: P1
+EOT
     }
 
   }

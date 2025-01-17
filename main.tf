@@ -87,7 +87,7 @@ module "prometheus" {
   create_k8s_namespace = var.prometheus_config.k8s_namespace.create
 
   log_level                 = var.prometheus_config.log_level
-  replicas                  = var.prometheus_config.replicas
+  replica_count             = var.prometheus_config.replica_count
   storage                   = var.prometheus_config.storage
   enable_kube_state_metrics = var.prometheus_config.enable_kube_state_metrics
   enable_node_exporter      = var.prometheus_config.enable_node_exporter
