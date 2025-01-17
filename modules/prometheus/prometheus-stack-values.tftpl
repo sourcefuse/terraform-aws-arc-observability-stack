@@ -127,17 +127,31 @@ grafana:
     pullPolicy: IfNotPresent
   service:
     enabled: true
+%{ if ingress_enabled == true ~}
     type: NodePort
+%{ else ~}
+    type: ClusterIP
+%{ endif ~}
     port: 80
     targetPort: 3000
   adminUser: ${admin_user}
   adminPassword: ${admin_password}
   ingress:
-    enabled: false
-    annotations: {}
-    hosts: []
-    path: /
+    enabled: ${ingress_enabled}
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: ${lb_visibility}
+      alb.ingress.kubernetes.io/group.order: "40"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/certificate-arn: ${aws_certificate_arn}
+      alb.ingress.kubernetes.io/healthcheck-path: "/api/health"
+    hosts:
+    - ${ingress_host}
+    paths:
+    - "/"
+    pathType: Prefix
     tls: []
+
   sidecar:
     dashboards:
       enabled: true
@@ -249,21 +263,10 @@ prometheus:
   service:
     port: 9090
     targetPort: 9090
-%{ if ingress_enabled == true ~}
-    type: NodePort
-%{ else ~}
     type: ClusterIP
-%{ endif ~}
-
   ingress:
-    enabled: ${ingress_enabled}
-    annotations:
-      kubernetes.io/ingress.class: alb
-      alb.ingress.kubernetes.io/scheme: ${lb_visibility}
-      alb.ingress.kubernetes.io/group.order: "40"
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-      alb.ingress.kubernetes.io/certificate-arn: ${aws_certificate_arn}
-      alb.ingress.kubernetes.io/healthcheck-path: "/api/health"
+    enabled: false
+    annotations: {}
     hosts: []
     paths:
     - "/-/healthy"

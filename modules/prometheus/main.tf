@@ -106,7 +106,7 @@ resource "helm_release" "blackbox_exporter" {
 data "kubernetes_ingress_v1" "this" {
   count = var.grafana_config.ingress_enabled ? 1 : 0
   metadata {
-    name      = "${var.name}-prometheus"
+    name      = "${var.name}-grafana"
     namespace = var.k8s_namespace
   }
 
