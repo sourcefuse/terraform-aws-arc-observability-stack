@@ -1,0 +1,464 @@
+global:
+  storageClass: ${storage_class}
+fullnameOverride: "${name}"
+clusterName: "{cluster_name}"
+
+clickhouse:
+  enabled: true
+  namespace: ""
+  nameOverride: ""
+  fullnameOverride: ""
+  cluster: cluster
+  database: signoz_metrics
+  traceDatabase: signoz_traces
+  logDatabase: signoz_logs
+  user: ${clickhouse.user}
+  password: ${password}
+  image:
+    registry: docker.io
+    repository: clickhouse/clickhouse-server
+    tag: 24.1.2-alpine
+    pullPolicy: IfNotPresent
+  imagePullSecrets: []
+  annotations: {}
+  serviceAccount:
+    create: true
+    annotations: {}
+    name:
+  service:
+    annotations: {}
+    type: ClusterIP
+    # -- Clickhouse HTTP port
+    httpPort: 8123
+    # -- Clickhouse TCP port
+    tcpPort: 9000
+  # -- Whether to use TLS connection connecting to ClickHouse
+  secure: false
+  # -- Whether to verify TLS certificate on connection to ClickHouse
+  verify: false
+  # -- URL for zookeeper.
+  externalZookeeper: {}
+  # servers:
+  # - host: signoz-signoz-zookeeper
+  #   port: 2181
+
+  # -- Node selector for settings for clickhouse pod
+  nodeSelector: {}
+  # -- Toleration labels for clickhouse pod assignment
+  tolerations: []
+  # -- Affinity settings for clickhouse pod
+  affinity: {}
+  # -- Configure resource requests and limits. Update according to your own use
+  # case as these values might not be suitable for your workload.
+  # Ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  #
+  # @default -- See `values.yaml` for defaults
+  resources:
+    requests:
+      cpu: ${clickhouse.cpu_request}
+      memory: ${clickhouse.memory_request}
+    limits:
+      cpu: ${clickhouse.cpu_limit}
+      memory: ${clickhouse.memory_limit}
+
+  # -- Security context for Clickhouse node
+  securityContext:
+    enabled: true
+    runAsUser: 101
+    runAsGroup: 101
+    fsGroup: 101
+    fsGroupChangePolicy: OnRootMismatch
+  persistence:
+    # -- Enable data persistence using PVC for ClickHouseDB data.
+    enabled: true
+    # -- Use a manually managed Persistent Volume and Claim.
+    # If defined, PVC must be created manually before volume will be bound.
+    # (only when deploying a single replica).
+    #
+    existingClaim: ""
+    # -- Persistent Volume Storage Class to use.
+    # If defined, `storageClassName: <storageClass>`.
+    # If set to "-", `storageClassName: ""`, which disables dynamic provisioning
+    # If undefined (the default) or set to `null`, no storageClassName spec is
+    # set, choosing the default provisioner.
+    #
+    storageClass: null # TODO: ------------------------> analyse
+    # -- Access Modes for persistent volume
+    accessModes:
+      - ReadWriteOnce
+    # -- Persistent Volume size
+    size: ${clickhouse.storage}
+  # -- Clickhouse user profile configuration.
+  # You can use this to override profile settings, for example
+  # `default/max_memory_usage: 40000000000` or `default/max_concurrent_queries: 200`
+  #
+  # For the full list of settings, see:
+  # - https://clickhouse.com/docs/en/operations/settings/settings-profiles/
+  # - https://clickhouse.com/docs/en/operations/settings/settings/
+  #
+  profiles: {}
+  # -- Default user profile configuration for Clickhouse. !!! Please DO NOT override this !!!
+  defaultProfiles:
+    default/allow_experimental_window_functions: "1"
+    default/allow_nondeterministic_mutations: "1"
+  # -- Clickhouse init container to copy histogramQuantile UDF
+  # @default -- See `values.yaml` for defaults
+  # -- Clickhouse cluster layout. (Experimental, use at own risk)
+  # For a full list of options, see https://github.com/Altinity/clickhouse-operator/blob/master/docs/custom_resource_explained.md
+  # section on clusters and layouts.
+  #
+  layout:
+    shardsCount: 1
+    replicasCount: 1
+  settings:
+    prometheus/endpoint: /metrics
+    prometheus/port: 9363
+  defaultSettings:
+    format_schema_path: /etc/clickhouse-server/config.d/
+    user_scripts_path: /var/lib/clickhouse/user_scripts/
+    user_defined_executable_functions_config: '/etc/clickhouse-server/functions/custom-functions.xml'
+  # -- ClickHouse pod(s) annotation.
+  podAnnotations:
+    signoz.io/scrape: 'true'
+    signoz.io/port: '9363'
+    signoz.io/path: /metrics
+  installCustomStorageClass: true
+
+
+signoz:
+  name: "signoz"
+  replicaCount: 1
+  image:
+    registry: docker.io
+    repository: signoz/signoz
+    tag: v0.80.0
+    pullPolicy: IfNotPresent
+  additionalArgs:
+    - --use-logs-new-schema=true
+    - --use-trace-new-schema=true
+  podSecurityContext: {}
+  # fsGroup: 2000
+
+  securityContext: {}
+
+  ingress:
+    # -- Enable ingress for signoz
+    enabled: ${signoz_bin.enable_ingress}
+    # -- Ingress Class Name to be used to identify ingress controllers
+    className: ""
+    # -- Annotations to signoz Ingress
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # -- signoz Ingress Host names with their path details
+    hosts:
+      - host: ${signoz_bin.domain}
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            port: 8080
+    # -- signoz Ingress TLS
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - signoz.domain.com
+  # -- Configure resource requests and limits. Update according to your own use
+  # case as these values might not be suitable for your workload.
+  # Ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  #
+  # @default -- See `values.yaml` for defaults
+  resources:
+    requests:
+      cpu: ${signoz_bin.cpu_request}
+      memory: ${signoz_bin.memory_request}
+    limits:
+      cpu: ${signoz_bin.cpu_limit}
+      memory: ${signoz_bin.memory_limit}
+  persistence:
+    enabled: true
+    storageClass: null
+    accessModes:
+      - ReadWriteOnce
+    size: ${signoz_bin.storage}
+
+
+
+alertmanager:
+  enabled: ${alertmanager.enable}
+  name: "alertmanager"
+  replicaCount: ${alertmanager.replica_count}
+  image:
+    registry: docker.io
+    repository: signoz/alertmanager
+    pullPolicy: IfNotPresent
+    tag: 0.23.7
+  podSecurityContext:
+    fsGroup: 65534
+  securityContext:
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    runAsUser: 65534
+    runAsNonRoot: true
+    runAsGroup: 65534
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+  ingress:
+    # -- Enable ingress for Alertmanager
+    enabled: ${alertmanager.enable_ingress}
+    # -- Ingress Class Name to be used to identify ingress controllers
+    className: ""
+    # -- Annotations to Alertmanager Ingress
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # -- Alertmanager Ingress Host names with their path details
+    hosts:
+      - host: ${alertmanager.domain}
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            port: 9093
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - alertmanager.domain.com
+  # -- Configure resource requests and limits. Update according to your own use
+  # case as these values might not be suitable for your workload.
+  # Ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  #
+  # @default -- See `values.yaml` for defaults
+  resources:
+    requests:
+      cpu: ${alertmanager.cpu_request}
+      memory: ${alertmanager.memory_request}
+    limits:
+      cpu: ${alertmanager.cpu_limit}
+      memory: ${alertmanager.memory_limit}
+  persistence:
+    # -- Enable data persistence using PVC for Alertmanager data.
+    enabled: true
+    # -- Name of an existing PVC to use (only when deploying a single replica)
+    existingClaim: ""
+    storageClass: null
+    # -- Access Modes for persistent volume
+    accessModes:
+      - ReadWriteOnce
+    # -- Persistent Volume size
+    size: ${alertmanager.storage}
+
+
+otelCollector:
+  name: "otel-collector"
+  image:
+    registry: docker.io
+    repository: signoz/signoz-otel-collector
+    tag: v0.111.39
+    pullPolicy: IfNotPresent
+  replicaCount: ${otel_collector.replica_count}
+  ingress:
+    enabled: ${otel_collector.enable_ingress}
+    className: ""
+    # -- Annotations to OtelCollector Ingress
+    annotations: {}
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # -- OtelCollector Ingress Host names with their path details
+    hosts:
+      - host: ${otel_collector.domain}
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            port: 4318
+    # -- OtelCollector Ingress TLS
+    tls: []
+  #
+  # @default -- See `values.yaml` for defaults
+  resources:
+    requests:
+      cpu: ${otel_collector.cpu_request}
+      memory: ${otel_collector.memory_request}
+    limits:
+      cpu: ${otel_collector.cpu_limit}
+      memory: ${otel_collector.memory_limit}
+  # -- OtelCollector priority class name
+  priorityClassName: ""
+  # -- Node selector for settings for OtelCollector pod
+  nodeSelector: {}
+  # -- Toleration labels for OtelCollector pod assignment
+  tolerations: []
+  # -- Affinity settings for OtelCollector pod
+  affinity: {}
+  # -- TopologySpreadConstraints describes how OtelCollector pods ought to spread
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/component: otel-collector
+  podSecurityContext: {}
+  # fsGroup: 2000
+
+  securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 11
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+    behavior: {}
+    # scaleDown:
+    #   stabilizationWindowSeconds: 300
+    #  policies:
+    #   - type: Pods
+    #     value: 1
+    #     periodSeconds: 180
+    # scaleUp:
+    #   stabilizationWindowSeconds: 300
+    #   policies:
+    #   - type: Pods
+    #     value: 2
+    #     periodSeconds: 60
+
+    autoscalingTemplate: []
+    keda:
+      annotations:
+      enabled: false
+      # -- Polling interval for metrics data
+      # Checks 30sec periodically for metrics data
+      pollingInterval: "30"
+      # -- Cooldown period for metrics data
+      # Once the load decreased, it will wait for 5 min and downscale
+      cooldownPeriod: "300"
+      # -- Minimum replica count
+      # Should be >= replicaCount specified in values.yaml
+      minReplicaCount: "1"
+      # -- Maximum replica count
+      maxReplicaCount: "5"
+      triggers: []
+      # - type: memory
+      #   metadata:
+      #     type: Utilization
+      #     value: "80"   # hpa make sure average Utilization <=80 by adding new pods
+      # - type: cpu
+      #   metadata:
+      #     type: Utilization
+      #     value: "80"   # hpa make sure average Utlization <=80 by adding new pods
+  # -- Configurations for OtelCollector
+  # @default -- See `values.yaml` for defaults
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+            max_recv_msg_size_mib: 16
+          http:
+            endpoint: 0.0.0.0:4318
+      jaeger:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:14250
+          thrift_http:
+            endpoint: 0.0.0.0:14268
+            # Uncomment to enable thift_company receiver.
+            # You will also have set set enable it in `otelCollector.ports
+            # thrift_compact:
+            #   endpoint: 0.0.0.0:6831
+      httplogreceiver/heroku:
+        # endpoint specifies the network interface and port which will receive data
+        endpoint: 0.0.0.0:8081
+        source: heroku
+      httplogreceiver/json:
+        # endpoint specifies the network interface and port which will receive data
+        endpoint: 0.0.0.0:8082
+        source: json
+    processors:
+      # Batch processor config.
+      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/batchprocessor/README.md
+      batch:
+        send_batch_size: 50000
+        timeout: 1s
+      # Memory Limiter processor.
+      # If not set, will be overridden with values based on k8s resource limits.
+      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/memorylimiterprocessor/README.md
+      # memory_limiter: null
+      signozspanmetrics/delta:
+        metrics_exporter: clickhousemetricswrite
+        latency_histogram_buckets: [100us, 1ms, 2ms, 6ms, 10ms, 50ms, 100ms, 250ms, 500ms, 1000ms, 1400ms, 2000ms, 5s, 10s, 20s, 40s, 60s]
+        dimensions_cache_size: 100000
+        dimensions:
+          - name: service.namespace
+            default: default
+          - name: deployment.environment
+            default: default
+          - name: signoz.collector.id
+        aggregation_temporality: AGGREGATION_TEMPORALITY_DELTA
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+      zpages:
+        endpoint: localhost:55679
+      pprof:
+        endpoint: localhost:1777
+    exporters:
+      clickhousetraces:
+        datasource: tcp://$${env:CLICKHOUSE_USER}:$${env:CLICKHOUSE_PASSWORD}@$${env:CLICKHOUSE_HOST}:$${env:CLICKHOUSE_PORT}/$${env:CLICKHOUSE_TRACE_DATABASE}
+        low_cardinal_exception_grouping: $${env:LOW_CARDINAL_EXCEPTION_GROUPING}
+        use_new_schema: true
+      clickhousemetricswrite:
+        endpoint: tcp://$${env:CLICKHOUSE_USER}:$${env:CLICKHOUSE_PASSWORD}@$${env:CLICKHOUSE_HOST}:$${env:CLICKHOUSE_PORT}/$${env:CLICKHOUSE_DATABASE}
+        timeout: 15s
+        resource_to_telemetry_conversion:
+          enabled: true
+      clickhouselogsexporter:
+        dsn: tcp://$${env:CLICKHOUSE_USER}:$${env:CLICKHOUSE_PASSWORD}@$${env:CLICKHOUSE_HOST}:$${env:CLICKHOUSE_PORT}/$${env:CLICKHOUSE_LOG_DATABASE}
+        timeout: 10s
+        use_new_schema: true
+      metadataexporter:
+        dsn: tcp://$${env:CLICKHOUSE_USER}:$${env:CLICKHOUSE_PASSWORD}@$${env:CLICKHOUSE_HOST}:$${env:CLICKHOUSE_PORT}/signoz_metadata
+        timeout: 10s
+        tenant_id: $${env:TENANT_ID}
+        cache:
+          provider: in_memory
+    service:
+      telemetry:
+        logs:
+          encoding: json
+        metrics:
+          address: 0.0.0.0:8888
+      extensions: [health_check, zpages, pprof]
+      pipelines:
+        traces:
+          receivers: [otlp, jaeger]
+          processors: [signozspanmetrics/delta, batch]
+          exporters: [clickhousetraces, metadataexporter]
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [clickhousemetricswrite, metadataexporter]
+        logs:
+          receivers: [otlp, httplogreceiver/heroku, httplogreceiver/json]
+          processors: [batch]
+          exporters: [clickhouselogsexporter, metadataexporter]
+signoz-otel-gateway:
+  enabled: false

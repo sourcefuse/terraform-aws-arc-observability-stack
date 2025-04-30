@@ -1,0 +1,2920 @@
+[0m[1mdata.aws_eks_cluster.this: Reading...[0m[0m
+[0m[1mdata.aws_eks_cluster.this: Read complete after 1s [id=arc-poc-cluster][0m
+[0m[1mdata.aws_eks_cluster_auth.this: Reading...[0m[0m
+[0m[1mdata.aws_eks_cluster_auth.this: Read complete after 0s [id=arc-poc-cluster][0m
+[0m[1mmodule.signoz.module.signoz[0].kubernetes_namespace.this[0]: Refreshing state... [id=signoz][0m
+[0m[1mmodule.signoz.module.signoz[0].helm_release.signoz: Refreshing state... [id=fluent-bit][0m
+[0m[1mmodule.signoz.module.signoz[0].helm_release.k8s_infra: Refreshing state... [id=fluent-bit-k8s-infra][0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [33m~[0m update in-place[0m
+
+Terraform will perform the following actions:
+
+[1m  # module.signoz.module.signoz[0].helm_release.k8s_infra[0m will be updated in-place
+[0m  [33m~[0m[0m resource "helm_release" "k8s_infra" {
+        id                         = "fluent-bit-k8s-infra"
+      [33m~[0m[0m metadata                   = [
+          [31m-[0m[0m {
+              [31m-[0m[0m app_version    = "0.109.0"
+              [31m-[0m[0m chart          = "k8s-infra"
+              [31m-[0m[0m first_deployed = 1745925488
+              [31m-[0m[0m last_deployed  = 1745925874
+              [31m-[0m[0m name           = "fluent-bit-k8s-infra"
+              [31m-[0m[0m namespace      = "signoz"
+              [31m-[0m[0m notes          = <<-EOT
+                    You have just deployed K8s-Infra chart:
+
+                    - otel-agent version: '0.109.0'
+                    - otel-deployment version: '0.109.0'
+
+                    NOTE: If you enable Prometheus preset in this chart and have installed SigNoz helm chart in the same cluster,
+                          please set otelCollectorMetrics.enabled to false in the signoz chart to avoid data duplication.
+                EOT
+              [31m-[0m[0m revision       = 2
+              [31m-[0m[0m values         = jsonencode(
+                    {
+                      [31m-[0m[0m enabled               = true
+                      [31m-[0m[0m fullnameOverride      = "signoz-monitoring"
+                      [31m-[0m[0m global                = {
+                          [31m-[0m[0m cloud                 = "aws"
+                          [31m-[0m[0m clusterDomain         = "cluster.local"
+                          [31m-[0m[0m clusterName           = "arc-poc-cluster"
+                          [31m-[0m[0m deploymentEnvironment = "dev"
+                          [31m-[0m[0m storageClass          = "gp3"
+                        }
+                      [31m-[0m[0m nameOverride          = ""
+                      [31m-[0m[0m namespace             = ""
+                      [31m-[0m[0m otelAgent             = {
+                          [31m-[0m[0m additionalEnvs       = {}
+                          [31m-[0m[0m affinity             = {}
+                          [31m-[0m[0m annotations          = {}
+                          [31m-[0m[0m clusterRole          = {
+                              [31m-[0m[0m annotations        = {}
+                              [31m-[0m[0m clusterRoleBinding = {
+                                  [31m-[0m[0m annotations = {}
+                                  [31m-[0m[0m name        = ""
+                                }
+                              [31m-[0m[0m create             = true
+                              [31m-[0m[0m name               = ""
+                              [31m-[0m[0m rules              = [
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "pods",
+                                          [31m-[0m[0m "namespaces",
+                                          [31m-[0m[0m "nodes",
+                                          [31m-[0m[0m "persistentvolumeclaims",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "get",
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "apps",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "replicasets",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "get",
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "extensions",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "replicasets",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "get",
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "nodes",
+                                          [31m-[0m[0m "endpoints",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "batch",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "jobs",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "nodes/proxy",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "get",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "nodes/stats",
+                                          [31m-[0m[0m "configmaps",
+                                          [31m-[0m[0m "events",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "create",
+                                          [31m-[0m[0m "get",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups     = [
+                                          [31m-[0m[0m "",
+                                        ]
+                                      [31m-[0m[0m resourceNames = [
+                                          [31m-[0m[0m "otel-container-insight-clusterleader",
+                                        ]
+                                      [31m-[0m[0m resources     = [
+                                          [31m-[0m[0m "configmaps",
+                                        ]
+                                      [31m-[0m[0m verbs         = [
+                                          [31m-[0m[0m "get",
+                                          [31m-[0m[0m "update",
+                                        ]
+                                    },
+                                ]
+                            }
+                          [31m-[0m[0m command              = {
+                              [31m-[0m[0m extraArgs = []
+                              [31m-[0m[0m name      = "/otelcol-contrib"
+                            }
+                          [31m-[0m[0m config               = {
+                              [31m-[0m[0m exporters  = {}
+                              [31m-[0m[0m extensions = {
+                                  [31m-[0m[0m health_check = {
+                                      [31m-[0m[0m endpoint = "0.0.0.0:13133"
+                                    }
+                                  [31m-[0m[0m pprof        = {
+                                      [31m-[0m[0m endpoint = "localhost:1777"
+                                    }
+                                  [31m-[0m[0m zpages       = {
+                                      [31m-[0m[0m endpoint = "localhost:55679"
+                                    }
+                                }
+                              [31m-[0m[0m processors = {
+                                  [31m-[0m[0m batch = {
+                                      [31m-[0m[0m send_batch_size = 10000
+                                      [31m-[0m[0m timeout         = "200ms"
+                                    }
+                                }
+                              [31m-[0m[0m receivers  = {
+                                  [31m-[0m[0m otlp = {
+                                      [31m-[0m[0m protocols = {
+                                          [31m-[0m[0m grpc = {
+                                              [31m-[0m[0m endpoint              = "0.0.0.0:4317"
+                                              [31m-[0m[0m max_recv_msg_size_mib = 4
+                                            }
+                                          [31m-[0m[0m http = {
+                                              [31m-[0m[0m endpoint = "0.0.0.0:4318"
+                                            }
+                                        }
+                                    }
+                                }
+                              [31m-[0m[0m service    = {
+                                  [31m-[0m[0m extensions = [
+                                      [31m-[0m[0m "health_check",
+                                      [31m-[0m[0m "zpages",
+                                      [31m-[0m[0m "pprof",
+                                    ]
+                                  [31m-[0m[0m pipelines  = {
+                                      [31m-[0m[0m logs    = {
+                                          [31m-[0m[0m exporters  = []
+                                          [31m-[0m[0m processors = [
+                                              [31m-[0m[0m "batch",
+                                            ]
+                                          [31m-[0m[0m receivers  = [
+                                              [31m-[0m[0m "otlp",
+                                            ]
+                                        }
+                                      [31m-[0m[0m metrics = {
+                                          [31m-[0m[0m exporters  = []
+                                          [31m-[0m[0m processors = [
+                                              [31m-[0m[0m "batch",
+                                            ]
+                                          [31m-[0m[0m receivers  = [
+                                              [31m-[0m[0m "otlp",
+                                            ]
+                                        }
+                                      [31m-[0m[0m traces  = {
+                                          [31m-[0m[0m exporters  = []
+                                          [31m-[0m[0m processors = [
+                                              [31m-[0m[0m "batch",
+                                            ]
+                                          [31m-[0m[0m receivers  = [
+                                              [31m-[0m[0m "otlp",
+                                            ]
+                                        }
+                                    }
+                                  [31m-[0m[0m telemetry  = {
+                                      [31m-[0m[0m logs    = {
+                                          [31m-[0m[0m encoding = "json"
+                                        }
+                                      [31m-[0m[0m metrics = {
+                                          [31m-[0m[0m address = "0.0.0.0:8888"
+                                        }
+                                    }
+                                }
+                            }
+                          [31m-[0m[0m configMap            = {
+                              [31m-[0m[0m create = true
+                            }
+                          [31m-[0m[0m customLivenessProbe  = {}
+                          [31m-[0m[0m customReadinessProbe = {}
+                          [31m-[0m[0m enabled              = true
+                          [31m-[0m[0m extraVolumeMounts    = []
+                          [31m-[0m[0m extraVolumes         = []
+                          [31m-[0m[0m image                = {
+                              [31m-[0m[0m pullPolicy = "IfNotPresent"
+                              [31m-[0m[0m registry   = "docker.io"
+                              [31m-[0m[0m repository = "otel/opentelemetry-collector-contrib"
+                              [31m-[0m[0m tag        = "0.109.0"
+                            }
+                          [31m-[0m[0m imagePullSecrets     = []
+                          [31m-[0m[0m ingress              = {
+                              [31m-[0m[0m annotations = {}
+                              [31m-[0m[0m className   = ""
+                              [31m-[0m[0m enabled     = false
+                              [31m-[0m[0m hosts       = [
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m host  = "otel-agent.domain.com"
+                                      [31m-[0m[0m paths = [
+                                          [31m-[0m[0m {
+                                              [31m-[0m[0m path     = "/"
+                                              [31m-[0m[0m pathType = "ImplementationSpecific"
+                                              [31m-[0m[0m port     = 4317
+                                            },
+                                        ]
+                                    },
+                                ]
+                              [31m-[0m[0m tls         = []
+                            }
+                          [31m-[0m[0m livenessProbe        = {
+                              [31m-[0m[0m enabled             = true
+                              [31m-[0m[0m failureThreshold    = 6
+                              [31m-[0m[0m initialDelaySeconds = 10
+                              [31m-[0m[0m path                = "/"
+                              [31m-[0m[0m periodSeconds       = 10
+                              [31m-[0m[0m port                = 13133
+                              [31m-[0m[0m successThreshold    = 1
+                              [31m-[0m[0m timeoutSeconds      = 5
+                            }
+                          [31m-[0m[0m minReadySeconds      = 5
+                          [31m-[0m[0m name                 = "otel-agent"
+                          [31m-[0m[0m nodeSelector         = {}
+                          [31m-[0m[0m podAnnotations       = {}
+                          [31m-[0m[0m podSecurityContext   = {}
+                          [31m-[0m[0m ports                = {
+                              [31m-[0m[0m health-check = {
+                                  [31m-[0m[0m containerPort = 13133
+                                  [31m-[0m[0m enabled       = true
+                                  [31m-[0m[0m hostPort      = 13133
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 13133
+                                }
+                              [31m-[0m[0m metrics      = {
+                                  [31m-[0m[0m containerPort = 8888
+                                  [31m-[0m[0m enabled       = true
+                                  [31m-[0m[0m hostPort      = 8888
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 8888
+                                }
+                              [31m-[0m[0m otlp         = {
+                                  [31m-[0m[0m containerPort = 4317
+                                  [31m-[0m[0m enabled       = true
+                                  [31m-[0m[0m hostPort      = 4317
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 4317
+                                }
+                              [31m-[0m[0m otlp-http    = {
+                                  [31m-[0m[0m containerPort = 4318
+                                  [31m-[0m[0m enabled       = true
+                                  [31m-[0m[0m hostPort      = 4318
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 4318
+                                }
+                              [31m-[0m[0m pprof        = {
+                                  [31m-[0m[0m containerPort = 1777
+                                  [31m-[0m[0m enabled       = false
+                                  [31m-[0m[0m hostPort      = 1777
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 1777
+                                }
+                              [31m-[0m[0m zipkin       = {
+                                  [31m-[0m[0m containerPort = 9411
+                                  [31m-[0m[0m enabled       = false
+                                  [31m-[0m[0m hostPort      = 9411
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 9411
+                                }
+                              [31m-[0m[0m zpages       = {
+                                  [31m-[0m[0m containerPort = 55679
+                                  [31m-[0m[0m enabled       = false
+                                  [31m-[0m[0m hostPort      = 55679
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 55679
+                                }
+                            }
+                          [31m-[0m[0m priorityClassName    = ""
+                          [31m-[0m[0m readinessProbe       = {
+                              [31m-[0m[0m enabled             = true
+                              [31m-[0m[0m failureThreshold    = 6
+                              [31m-[0m[0m initialDelaySeconds = 10
+                              [31m-[0m[0m path                = "/"
+                              [31m-[0m[0m periodSeconds       = 10
+                              [31m-[0m[0m port                = 13133
+                              [31m-[0m[0m successThreshold    = 1
+                              [31m-[0m[0m timeoutSeconds      = 5
+                            }
+                          [31m-[0m[0m resources            = {
+                              [31m-[0m[0m requests = {
+                                  [31m-[0m[0m cpu    = "100m"
+                                  [31m-[0m[0m memory = "100Mi"
+                                }
+                            }
+                          [31m-[0m[0m securityContext      = {}
+                          [31m-[0m[0m service              = {
+                              [31m-[0m[0m annotations           = {}
+                              [31m-[0m[0m internalTrafficPolicy = "Local"
+                              [31m-[0m[0m type                  = "ClusterIP"
+                            }
+                          [31m-[0m[0m serviceAccount       = {
+                              [31m-[0m[0m annotations = {}
+                              [31m-[0m[0m create      = true
+                              [31m-[0m[0m name        = [90mnull[0m[0m
+                            }
+                          [31m-[0m[0m tolerations          = [
+                              [31m-[0m[0m {
+                                  [31m-[0m[0m operator = "Exists"
+                                },
+                            ]
+                        }
+                      [31m-[0m[0m otelCollectorEndpoint = "http://signoz-monitoring-otel-collector:4317"
+                      [31m-[0m[0m otelDeployment        = {
+                          [31m-[0m[0m additionalEnvs            = {}
+                          [31m-[0m[0m affinity                  = {}
+                          [31m-[0m[0m annotations               = {}
+                          [31m-[0m[0m clusterRole               = {
+                              [31m-[0m[0m annotations        = {}
+                              [31m-[0m[0m clusterRoleBinding = {
+                                  [31m-[0m[0m annotations = {}
+                                  [31m-[0m[0m name        = ""
+                                }
+                              [31m-[0m[0m create             = true
+                              [31m-[0m[0m name               = ""
+                              [31m-[0m[0m rules              = [
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "events",
+                                          [31m-[0m[0m "namespaces",
+                                          [31m-[0m[0m "namespaces/status",
+                                          [31m-[0m[0m "nodes",
+                                          [31m-[0m[0m "nodes/spec",
+                                          [31m-[0m[0m "pods",
+                                          [31m-[0m[0m "pods/status",
+                                          [31m-[0m[0m "replicationcontrollers",
+                                          [31m-[0m[0m "replicationcontrollers/status",
+                                          [31m-[0m[0m "resourcequotas",
+                                          [31m-[0m[0m "services",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "get",
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "apps",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "daemonsets",
+                                          [31m-[0m[0m "deployments",
+                                          [31m-[0m[0m "replicasets",
+                                          [31m-[0m[0m "statefulsets",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "get",
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "extensions",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "daemonsets",
+                                          [31m-[0m[0m "deployments",
+                                          [31m-[0m[0m "replicasets",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "get",
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "batch",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "jobs",
+                                          [31m-[0m[0m "cronjobs",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "get",
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m apiGroups = [
+                                          [31m-[0m[0m "autoscaling",
+                                        ]
+                                      [31m-[0m[0m resources = [
+                                          [31m-[0m[0m "horizontalpodautoscalers",
+                                        ]
+                                      [31m-[0m[0m verbs     = [
+                                          [31m-[0m[0m "get",
+                                          [31m-[0m[0m "list",
+                                          [31m-[0m[0m "watch",
+                                        ]
+                                    },
+                                ]
+                            }
+                          [31m-[0m[0m command                   = {
+                              [31m-[0m[0m extraArgs = []
+                              [31m-[0m[0m name      = "/otelcol-contrib"
+                            }
+                          [31m-[0m[0m config                    = {
+                              [31m-[0m[0m exporters  = {}
+                              [31m-[0m[0m extensions = {
+                                  [31m-[0m[0m health_check = {
+                                      [31m-[0m[0m endpoint = "0.0.0.0:13133"
+                                    }
+                                  [31m-[0m[0m pprof        = {
+                                      [31m-[0m[0m endpoint = "localhost:1777"
+                                    }
+                                  [31m-[0m[0m zpages       = {
+                                      [31m-[0m[0m endpoint = "localhost:55679"
+                                    }
+                                }
+                              [31m-[0m[0m processors = {
+                                  [31m-[0m[0m batch = {
+                                      [31m-[0m[0m send_batch_size = 10000
+                                      [31m-[0m[0m timeout         = "1s"
+                                    }
+                                }
+                              [31m-[0m[0m receivers  = {}
+                              [31m-[0m[0m service    = {
+                                  [31m-[0m[0m extensions = [
+                                      [31m-[0m[0m "health_check",
+                                      [31m-[0m[0m "zpages",
+                                      [31m-[0m[0m "pprof",
+                                    ]
+                                  [31m-[0m[0m pipelines  = {
+                                      [31m-[0m[0m logs               = {
+                                          [31m-[0m[0m exporters  = []
+                                          [31m-[0m[0m processors = [
+                                              [31m-[0m[0m "batch",
+                                            ]
+                                          [31m-[0m[0m receivers  = []
+                                        }
+                                      [31m-[0m[0m "metrics/internal" = {
+                                          [31m-[0m[0m exporters  = []
+                                          [31m-[0m[0m processors = [
+                                              [31m-[0m[0m "batch",
+                                            ]
+                                          [31m-[0m[0m receivers  = []
+                                        }
+                                      [31m-[0m[0m "metrics/scraper"  = {
+                                          [31m-[0m[0m exporters  = []
+                                          [31m-[0m[0m processors = [
+                                              [31m-[0m[0m "batch",
+                                            ]
+                                          [31m-[0m[0m receivers  = []
+                                        }
+                                    }
+                                  [31m-[0m[0m telemetry  = {
+                                      [31m-[0m[0m logs    = {
+                                          [31m-[0m[0m encoding = "json"
+                                        }
+                                      [31m-[0m[0m metrics = {
+                                          [31m-[0m[0m address = "0.0.0.0:8888"
+                                        }
+                                    }
+                                }
+                            }
+                          [31m-[0m[0m configMap                 = {
+                              [31m-[0m[0m create = true
+                            }
+                          [31m-[0m[0m customLivenessProbe       = {}
+                          [31m-[0m[0m customReadinessProbe      = {}
+                          [31m-[0m[0m enabled                   = true
+                          [31m-[0m[0m extraVolumeMounts         = []
+                          [31m-[0m[0m extraVolumes              = []
+                          [31m-[0m[0m image                     = {
+                              [31m-[0m[0m pullPolicy = "IfNotPresent"
+                              [31m-[0m[0m registry   = "docker.io"
+                              [31m-[0m[0m repository = "otel/opentelemetry-collector-contrib"
+                              [31m-[0m[0m tag        = "0.109.0"
+                            }
+                          [31m-[0m[0m imagePullSecrets          = []
+                          [31m-[0m[0m ingress                   = {
+                              [31m-[0m[0m annotations = {}
+                              [31m-[0m[0m className   = ""
+                              [31m-[0m[0m enabled     = false
+                              [31m-[0m[0m hosts       = [
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m host  = "otel-deployment.domain.com"
+                                      [31m-[0m[0m paths = [
+                                          [31m-[0m[0m {
+                                              [31m-[0m[0m path     = "/"
+                                              [31m-[0m[0m pathType = "ImplementationSpecific"
+                                              [31m-[0m[0m port     = 13133
+                                            },
+                                        ]
+                                    },
+                                ]
+                              [31m-[0m[0m tls         = []
+                            }
+                          [31m-[0m[0m livenessProbe             = {
+                              [31m-[0m[0m enabled             = true
+                              [31m-[0m[0m failureThreshold    = 6
+                              [31m-[0m[0m initialDelaySeconds = 10
+                              [31m-[0m[0m path                = "/"
+                              [31m-[0m[0m periodSeconds       = 10
+                              [31m-[0m[0m port                = 13133
+                              [31m-[0m[0m successThreshold    = 1
+                              [31m-[0m[0m timeoutSeconds      = 5
+                            }
+                          [31m-[0m[0m minReadySeconds           = 5
+                          [31m-[0m[0m name                      = "otel-deployment"
+                          [31m-[0m[0m nodeSelector              = {}
+                          [31m-[0m[0m podAnnotations            = {}
+                          [31m-[0m[0m podSecurityContext        = {}
+                          [31m-[0m[0m ports                     = {
+                              [31m-[0m[0m health-check = {
+                                  [31m-[0m[0m containerPort = 13133
+                                  [31m-[0m[0m enabled       = true
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 13133
+                                }
+                              [31m-[0m[0m metrics      = {
+                                  [31m-[0m[0m containerPort = 8888
+                                  [31m-[0m[0m enabled       = false
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 8888
+                                }
+                              [31m-[0m[0m pprof        = {
+                                  [31m-[0m[0m containerPort = 1777
+                                  [31m-[0m[0m enabled       = false
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 1777
+                                }
+                              [31m-[0m[0m zpages       = {
+                                  [31m-[0m[0m containerPort = 55679
+                                  [31m-[0m[0m enabled       = false
+                                  [31m-[0m[0m nodePort      = ""
+                                  [31m-[0m[0m protocol      = "TCP"
+                                  [31m-[0m[0m servicePort   = 55679
+                                }
+                            }
+                          [31m-[0m[0m priorityClassName         = ""
+                          [31m-[0m[0m progressDeadlineSeconds   = 120
+                          [31m-[0m[0m readinessProbe            = {
+                              [31m-[0m[0m enabled             = true
+                              [31m-[0m[0m failureThreshold    = 6
+                              [31m-[0m[0m initialDelaySeconds = 10
+                              [31m-[0m[0m path                = "/"
+                              [31m-[0m[0m periodSeconds       = 10
+                              [31m-[0m[0m port                = 13133
+                              [31m-[0m[0m successThreshold    = 1
+                              [31m-[0m[0m timeoutSeconds      = 5
+                            }
+                          [31m-[0m[0m resources                 = {
+                              [31m-[0m[0m requests = {
+                                  [31m-[0m[0m cpu    = "100m"
+                                  [31m-[0m[0m memory = "100Mi"
+                                }
+                            }
+                          [31m-[0m[0m securityContext           = {}
+                          [31m-[0m[0m service                   = {
+                              [31m-[0m[0m annotations = {}
+                              [31m-[0m[0m type        = "ClusterIP"
+                            }
+                          [31m-[0m[0m serviceAccount            = {
+                              [31m-[0m[0m annotations = {}
+                              [31m-[0m[0m create      = true
+                              [31m-[0m[0m name        = [90mnull[0m[0m
+                            }
+                          [31m-[0m[0m tolerations               = []
+                          [31m-[0m[0m topologySpreadConstraints = []
+                        }
+                      [31m-[0m[0m presets               = {
+                          [31m-[0m[0m clusterMetrics       = {
+                              [31m-[0m[0m allocatableTypesToReport = [
+                                  [31m-[0m[0m "cpu",
+                                  [31m-[0m[0m "memory",
+                                ]
+                              [31m-[0m[0m collectionInterval       = "30s"
+                              [31m-[0m[0m enabled                  = true
+                              [31m-[0m[0m metrics                  = {
+                                  [31m-[0m[0m "k8s.node.condition"    = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.pod.status_reason" = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                }
+                              [31m-[0m[0m nodeConditionsToReport   = [
+                                  [31m-[0m[0m "Ready",
+                                  [31m-[0m[0m "MemoryPressure",
+                                  [31m-[0m[0m "DiskPressure",
+                                  [31m-[0m[0m "PIDPressure",
+                                  [31m-[0m[0m "NetworkUnavailable",
+                                ]
+                              [31m-[0m[0m resourceAttributes       = {
+                                  [31m-[0m[0m "container.runtime"                           = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "container.runtime.version"                   = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.container.status.last_terminated_reason" = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.kubelet.version"                         = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.pod.qos_class"                           = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                }
+                            }
+                          [31m-[0m[0m hostMetrics          = {
+                              [31m-[0m[0m collectionInterval = "30s"
+                              [31m-[0m[0m enabled            = true
+                              [31m-[0m[0m scrapers           = {
+                                  [31m-[0m[0m cpu        = {}
+                                  [31m-[0m[0m disk       = {
+                                      [31m-[0m[0m exclude = {
+                                          [31m-[0m[0m devices    = [
+                                              [31m-[0m[0m "^ram\\d+$",
+                                              [31m-[0m[0m "^zram\\d+$",
+                                              [31m-[0m[0m "^loop\\d+$",
+                                              [31m-[0m[0m "^fd\\d+$",
+                                              [31m-[0m[0m "^hd[a-z]\\d+$",
+                                              [31m-[0m[0m "^sd[a-z]\\d+$",
+                                              [31m-[0m[0m "^vd[a-z]\\d+$",
+                                              [31m-[0m[0m "^xvd[a-z]\\d+$",
+                                              [31m-[0m[0m "^nvme\\d+n\\d+p\\d+$",
+                                            ]
+                                          [31m-[0m[0m match_type = "regexp"
+                                        }
+                                    }
+                                  [31m-[0m[0m filesystem = {
+                                      [31m-[0m[0m exclude_fs_types     = {
+                                          [31m-[0m[0m fs_types   = [
+                                              [31m-[0m[0m "autofs",
+                                              [31m-[0m[0m "binfmt_misc",
+                                              [31m-[0m[0m "bpf",
+                                              [31m-[0m[0m "cgroup2?",
+                                              [31m-[0m[0m "configfs",
+                                              [31m-[0m[0m "debugfs",
+                                              [31m-[0m[0m "devpts",
+                                              [31m-[0m[0m "devtmpfs",
+                                              [31m-[0m[0m "fusectl",
+                                              [31m-[0m[0m "hugetlbfs",
+                                              [31m-[0m[0m "iso9660",
+                                              [31m-[0m[0m "mqueue",
+                                              [31m-[0m[0m "nsfs",
+                                              [31m-[0m[0m "overlay",
+                                              [31m-[0m[0m "proc",
+                                              [31m-[0m[0m "procfs",
+                                              [31m-[0m[0m "pstore",
+                                              [31m-[0m[0m "rpc_pipefs",
+                                              [31m-[0m[0m "securityfs",
+                                              [31m-[0m[0m "selinuxfs",
+                                              [31m-[0m[0m "squashfs",
+                                              [31m-[0m[0m "sysfs",
+                                              [31m-[0m[0m "tracefs",
+                                            ]
+                                          [31m-[0m[0m match_type = "strict"
+                                        }
+                                      [31m-[0m[0m exclude_mount_points = {
+                                          [31m-[0m[0m match_type   = "regexp"
+                                          [31m-[0m[0m mount_points = [
+                                              [31m-[0m[0m "/dev/*",
+                                              [31m-[0m[0m "/proc/*",
+                                              [31m-[0m[0m "/sys/*",
+                                              [31m-[0m[0m "/run/credentials/*",
+                                              [31m-[0m[0m "/run/k3s/containerd/*",
+                                              [31m-[0m[0m "/var/lib/docker/*",
+                                              [31m-[0m[0m "/var/lib/containers/storage/*",
+                                              [31m-[0m[0m "/var/lib/kubelet/*",
+                                              [31m-[0m[0m "/snap/*",
+                                            ]
+                                        }
+                                    }
+                                  [31m-[0m[0m load       = {}
+                                  [31m-[0m[0m memory     = {}
+                                  [31m-[0m[0m network    = {
+                                      [31m-[0m[0m exclude = {
+                                          [31m-[0m[0m interfaces = [
+                                              [31m-[0m[0m "^veth.*$",
+                                              [31m-[0m[0m "^docker.*$",
+                                              [31m-[0m[0m "^br-.*$",
+                                              [31m-[0m[0m "^flannel.*$",
+                                              [31m-[0m[0m "^cali.*$",
+                                              [31m-[0m[0m "^cbr.*$",
+                                              [31m-[0m[0m "^cni.*$",
+                                              [31m-[0m[0m "^dummy.*$",
+                                              [31m-[0m[0m "^tailscale.*$",
+                                              [31m-[0m[0m "^lo$",
+                                            ]
+                                          [31m-[0m[0m match_type = "regexp"
+                                        }
+                                    }
+                                }
+                            }
+                          [31m-[0m[0m k8sEvents            = {
+                              [31m-[0m[0m authType   = "serviceAccount"
+                              [31m-[0m[0m enabled    = true
+                              [31m-[0m[0m namespaces = []
+                            }
+                          [31m-[0m[0m kubeletMetrics       = {
+                              [31m-[0m[0m authType            = "serviceAccount"
+                              [31m-[0m[0m collectionInterval  = "30s"
+                              [31m-[0m[0m enabled             = true
+                              [31m-[0m[0m endpoint            = "${env:K8S_HOST_IP}:10250"
+                              [31m-[0m[0m extraMetadataLabels = [
+                                  [31m-[0m[0m "container.id",
+                                  [31m-[0m[0m "k8s.volume.type",
+                                ]
+                              [31m-[0m[0m insecureSkipVerify  = true
+                              [31m-[0m[0m metricGroups        = [
+                                  [31m-[0m[0m "container",
+                                  [31m-[0m[0m "pod",
+                                  [31m-[0m[0m "node",
+                                  [31m-[0m[0m "volume",
+                                ]
+                              [31m-[0m[0m metrics             = {
+                                  [31m-[0m[0m "container.cpu.usage"                      = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "container.uptime"                         = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.container.cpu_limit_utilization"      = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.container.cpu_request_utilization"    = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.container.memory_limit_utilization"   = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.container.memory_request_utilization" = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.node.cpu.usage"                       = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.node.uptime"                          = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.pod.cpu.usage"                        = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.pod.cpu_limit_utilization"            = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.pod.cpu_request_utilization"          = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.pod.memory_limit_utilization"         = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.pod.memory_request_utilization"       = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                  [31m-[0m[0m "k8s.pod.uptime"                           = {
+                                      [31m-[0m[0m enabled = true
+                                    }
+                                }
+                            }
+                          [31m-[0m[0m kubernetesAttributes = {
+                              [31m-[0m[0m enabled            = true
+                              [31m-[0m[0m extractAnnotations = []
+                              [31m-[0m[0m extractLabels      = []
+                              [31m-[0m[0m extractMetadatas   = [
+                                  [31m-[0m[0m "k8s.namespace.name",
+                                  [31m-[0m[0m "k8s.deployment.name",
+                                  [31m-[0m[0m "k8s.statefulset.name",
+                                  [31m-[0m[0m "k8s.daemonset.name",
+                                  [31m-[0m[0m "k8s.cronjob.name",
+                                  [31m-[0m[0m "k8s.job.name",
+                                  [31m-[0m[0m "k8s.node.name",
+                                  [31m-[0m[0m "k8s.node.uid",
+                                  [31m-[0m[0m "k8s.pod.name",
+                                  [31m-[0m[0m "k8s.pod.uid",
+                                  [31m-[0m[0m "k8s.pod.start_time",
+                                ]
+                              [31m-[0m[0m filter             = {
+                                  [31m-[0m[0m node_from_env_var = "K8S_NODE_NAME"
+                                }
+                              [31m-[0m[0m passthrough        = false
+                              [31m-[0m[0m podAssociation     = [
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m sources = [
+                                          [31m-[0m[0m {
+                                              [31m-[0m[0m from = "resource_attribute"
+                                              [31m-[0m[0m name = "k8s.pod.ip"
+                                            },
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m sources = [
+                                          [31m-[0m[0m {
+                                              [31m-[0m[0m from = "resource_attribute"
+                                              [31m-[0m[0m name = "k8s.pod.uid"
+                                            },
+                                        ]
+                                    },
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m sources = [
+                                          [31m-[0m[0m {
+                                              [31m-[0m[0m from = "connection"
+                                            },
+                                        ]
+                                    },
+                                ]
+                            }
+                          [31m-[0m[0m loggingExporter      = {
+                              [31m-[0m[0m enabled            = false
+                              [31m-[0m[0m samplingInitial    = 2
+                              [31m-[0m[0m samplingThereafter = 500
+                              [31m-[0m[0m verbosity          = "basic"
+                            }
+                          [31m-[0m[0m logsCollection       = {
+                              [31m-[0m[0m blacklist       = {
+                                  [31m-[0m[0m additionalExclude = []
+                                  [31m-[0m[0m containers        = []
+                                  [31m-[0m[0m enabled           = true
+                                  [31m-[0m[0m namespaces        = [
+                                      [31m-[0m[0m "kube-system",
+                                    ]
+                                  [31m-[0m[0m pods              = [
+                                      [31m-[0m[0m "hotrod",
+                                      [31m-[0m[0m "locust",
+                                    ]
+                                  [31m-[0m[0m signozLogs        = true
+                                }
+                              [31m-[0m[0m enabled         = true
+                              [31m-[0m[0m include         = [
+                                  [31m-[0m[0m "/var/log/pods/*/*/*.log",
+                                ]
+                              [31m-[0m[0m includeFileName = false
+                              [31m-[0m[0m includeFilePath = true
+                              [31m-[0m[0m operators       = [
+                                  [31m-[0m[0m {
+                                      [31m-[0m[0m id   = "container-parser"
+                                      [31m-[0m[0m type = "container"
+                                    },
+                                ]
+                              [31m-[0m[0m startAt         = "end"
+                              [31m-[0m[0m whitelist       = {
+                                  [31m-[0m[0m additionalInclude = []
+                                  [31m-[0m[0m containers        = []
+                                  [31m-[0m[0m enabled           = false
+                                  [31m-[0m[0m namespaces        = []
+                                  [31m-[0m[0m pods              = []
+                                  [31m-[0m[0m signozLogs        = true
+                                }
+                            }
+                          [31m-[0m[0m otlpExporter         = {
+                              [31m-[0m[0m enabled = true
+                            }
+                          [31m-[0m[0m prometheus           = {
+                              [31m-[0m[0m annotationsPrefix    = "signoz.io"
+                              [31m-[0m[0m enabled              = false
+                              [31m-[0m[0m includeContainerName = false
+                              [31m-[0m[0m includePodLabel      = false
+                              [31m-[0m[0m namespaceScoped      = false
+                              [31m-[0m[0m namespaces           = []
+                              [31m-[0m[0m scrapeInterval       = "60s"
+                            }
+                          [31m-[0m[0m resourceDetection    = {
+                              [31m-[0m[0m enabled               = true
+                              [31m-[0m[0m envResourceAttributes = ""
+                              [31m-[0m[0m override              = false
+                              [31m-[0m[0m timeout               = "2s"
+                            }
+                        }
+                    }
+                )
+              [31m-[0m[0m version        = "0.12.1"
+            },
+        ] -> (known after apply)
+        name                       = "fluent-bit-k8s-infra"
+      [33m~[0m[0m values                     = [
+          [31m-[0m[0m <<-EOT
+                global:
+                  storageClass: gp3
+                  # -- Kubernetes cluster domain
+                  # It is used only when components are installed in different namespace
+                  clusterDomain: cluster.local
+                  # -- Kubernetes cluster name
+                  # It is used to attached to telemetry data via resource detection processor
+                  clusterName: "arc-poc-cluster"
+                  # -- Deployment environment to be attached to telemetry data
+                  deploymentEnvironment: "dev"
+                  # -- Kubernetes cluster cloud provider along with distribution if any.
+                  # example: `aws`, `azure`, `gcp`, `gcp/autogke`, `azure`, and `other`
+                  cloud: aws
+
+                # -- K8s infra chart name override
+                nameOverride: ""
+
+                # -- K8s infra chart full name override
+                fullnameOverride: "signoz-monitoring"
+
+                # -- Whether to enable K8s infra chart
+                enabled: true
+                # -- Endpoint/IP Address of the SigNoz or any other OpenTelemetry backend.
+                # Set it to `ingest.signoz.io:4317` for SigNoz SaaS.
+                #
+                # If set to null and the chart is installed as dependency, it will attempt
+                # to autogenerate the endpoint of SigNoz OtelCollector.
+                otelCollectorEndpoint: "http://signoz-monitoring-otel-collector:4317"
+
+
+                # -- Which namespace to install k8s-infra components.
+                # By default installed to the namespace same as the chart.
+                namespace: ""
+
+                # -- Presets to easily set up OtelCollector configurations.
+                presets:
+                  loggingExporter:
+                    enabled: false
+                    # Verbosity of the logging export: basic, normal, detailed
+                    verbosity: basic
+                    # Number of messages initially logged each second
+                    samplingInitial: 2
+                    # Sampling rate after the initial messages are logged
+                    samplingThereafter: 500
+                  otlpExporter:
+                    enabled: true
+                  logsCollection:
+                    enabled: true
+                    startAt: end
+                    includeFilePath: true
+                    includeFileName: false
+                    # This include path patterns for log files to be collected.
+                    # By default, all container logs are collected.
+                    # If whitelist is set, this list is ignored.
+                    include:
+                      - /var/log/pods/*/*/*.log
+                    # This can be used to exclude certain log files from being collected.
+                    # By default, kube-system and hotrod, locust pods are excluded.
+                    blacklist:
+                      enabled: true
+                      signozLogs: true
+                      namespaces:
+                        - kube-system
+                      pods:
+                        - hotrod
+                        - locust
+                      containers: []
+                      additionalExclude: []
+                    # This can be used to whitelist certain log files to be collected.
+                    # By default this is disabled and all container logs are collected.
+                    # If whitelist is enabled, `include` is ignored.
+                    whitelist:
+                      enabled: false
+                      signozLogs: true
+                      namespaces: []
+                      pods: []
+                      containers: []
+                      additionalInclude: []
+                    operators:
+                      - id: container-parser
+                        type: container
+                  hostMetrics:
+                    enabled: true
+                    collectionInterval: 30s
+                    scrapers:
+                      cpu: {}
+                      load: {}
+                      memory: {}
+                      disk:
+                        exclude:
+                          devices:
+                            - ^ram\d+$
+                            - ^zram\d+$
+                            - ^loop\d+$
+                            - ^fd\d+$
+                            - ^hd[a-z]\d+$
+                            - ^sd[a-z]\d+$
+                            - ^vd[a-z]\d+$
+                            - ^xvd[a-z]\d+$
+                            - ^nvme\d+n\d+p\d+$
+                          match_type: regexp
+                      filesystem:
+                        exclude_fs_types:
+                          fs_types:
+                            - autofs
+                            - binfmt_misc
+                            - bpf
+                            - cgroup2?
+                            - configfs
+                            - debugfs
+                            - devpts
+                            - devtmpfs
+                            - fusectl
+                            - hugetlbfs
+                            - iso9660
+                            - mqueue
+                            - nsfs
+                            - overlay
+                            - proc
+                            - procfs
+                            - pstore
+                            - rpc_pipefs
+                            - securityfs
+                            - selinuxfs
+                            - squashfs
+                            - sysfs
+                            - tracefs
+                          match_type: strict
+                        exclude_mount_points:
+                          mount_points:
+                            - /dev/*
+                            - /proc/*
+                            - /sys/*
+                            - /run/credentials/*
+                            - /run/k3s/containerd/*
+                            - /var/lib/docker/*
+                            - /var/lib/containers/storage/*
+                            - /var/lib/kubelet/*
+                            - /snap/*
+                          match_type: regexp
+                      network:
+                        exclude:
+                          interfaces:
+                            - ^veth.*$
+                            - ^docker.*$
+                            - ^br-.*$
+                            - ^flannel.*$
+                            - ^cali.*$
+                            - ^cbr.*$
+                            - ^cni.*$
+                            - ^dummy.*$
+                            - ^tailscale.*$
+                            - ^lo$
+                          match_type: regexp
+                  kubeletMetrics:
+                    enabled: true
+                    collectionInterval: 30s
+                    authType: serviceAccount
+                    endpoint: ${env:K8S_HOST_IP}:10250
+                    insecureSkipVerify: true
+                    extraMetadataLabels:
+                      - container.id
+                      - k8s.volume.type
+                    metricGroups:
+                      - container
+                      - pod
+                      - node
+                      - volume
+                    metrics:
+                      k8s.node.cpu.usage:
+                        enabled: true
+                      k8s.node.uptime:
+                        enabled: true
+                      k8s.pod.cpu.usage:
+                        enabled: true
+                      k8s.pod.cpu_limit_utilization:
+                        enabled: true
+                      k8s.pod.cpu_request_utilization:
+                        enabled: true
+                      k8s.pod.memory_limit_utilization:
+                        enabled: true
+                      k8s.pod.memory_request_utilization:
+                        enabled: true
+                      k8s.pod.uptime:
+                        enabled: true
+                      container.cpu.usage:
+                        enabled: true
+                      k8s.container.cpu_limit_utilization:
+                        enabled: true
+                      k8s.container.cpu_request_utilization:
+                        enabled: true
+                      k8s.container.memory_limit_utilization:
+                        enabled: true
+                      k8s.container.memory_request_utilization:
+                        enabled: true
+                      container.uptime:
+                        enabled: true
+                  kubernetesAttributes:
+                    enabled: true
+                    # -- Whether to detect the IP address of agents and add it as an attribute to all telemetry resources.
+                    # If set to true, Agents will not make any k8s API calls, do any discovery of pods or extract any metadata.
+                    passthrough: false
+                    # -- Filters can be used to limit each OpenTelemetry agent to query pods based on specific
+                    # selector to only dramatically reducing resource requirements for very large clusters.
+                    filter:
+                      # -- Restrict each OpenTelemetry agent to query pods running on the same node
+                      node_from_env_var: K8S_NODE_NAME
+                    # -- Pod Association section allows to define rules for tagging spans, metrics,
+                    # and logs with Pod metadata.
+                    podAssociation:
+                      - sources:
+                        - from: resource_attribute
+                          name: k8s.pod.ip
+                      - sources:
+                        - from: resource_attribute
+                          name: k8s.pod.uid
+                      - sources:
+                        - from: connection
+                    # -- Which pod/namespace metadata to extract from a list of default metadata fields.
+                    extractMetadatas:
+                      - k8s.namespace.name
+                      - k8s.deployment.name
+                      - k8s.statefulset.name
+                      - k8s.daemonset.name
+                      - k8s.cronjob.name
+                      - k8s.job.name
+                      - k8s.node.name
+                      - k8s.node.uid
+                      - k8s.pod.name
+                      - k8s.pod.uid
+                      - k8s.pod.start_time
+                    # -- Which labels to extract from a list of metadata fields.
+                    extractLabels: []
+                    # -- Which annotations to extract from a list of metadata fields.
+                    extractAnnotations: []
+                  clusterMetrics:
+                    enabled: true
+                    collectionInterval: 30s
+                    resourceAttributes:
+                      k8s.pod.qos_class:
+                        enabled: true
+                      k8s.kubelet.version:
+                        enabled: true
+                      container.runtime:
+                        enabled: true
+                      container.runtime.version:
+                        enabled: true
+                      k8s.container.status.last_terminated_reason:
+                        enabled: true
+                    nodeConditionsToReport:
+                      - Ready
+                      - MemoryPressure
+                      - DiskPressure
+                      - PIDPressure
+                      - NetworkUnavailable
+                    allocatableTypesToReport:
+                      - cpu
+                      - memory
+                      # - ephemeral-storage
+                      # - storage
+                    metrics:
+                      k8s.node.condition:
+                        enabled: true
+                      k8s.pod.status_reason:
+                        enabled: true
+                  prometheus:
+                    # -- Whether to enable metrics scraping using pod annotation
+                    enabled: false
+                    # -- Prefix for the pod annotations to be used for metrics scraping
+                    annotationsPrefix: signoz.io
+                    # -- How often to scrape metrics
+                    scrapeInterval: 60s
+                    # -- Whether to only scrape metrics from pods in the same namespace
+                    namespaceScoped: false
+                    # -- If set, only scrape metrics from pods in the specified namespaces
+                    namespaces: []
+                    # -- This will include all pod labels in the metrics, could potentially cause
+                    # performance issues with large number of pods with many labels
+                    includePodLabel: false
+                    # -- This is not recommended in case of multiple containers or init containers in a pod
+                    # Since it will create multiple timeseries for the same pod metrics with different container names
+                    # containers with `-init` suffix in the name will be ignored
+                    includeContainerName: false
+                  resourceDetection:
+                    enabled: true
+                    timeout: 2s
+                    override: false
+                    envResourceAttributes: ""
+                  k8sEvents:
+                    enabled: true
+                    authType: serviceAccount
+                    # -- List of namespaces to watch for events.
+                    # all namespaces by default
+                    namespaces: []
+
+                # Default values for OtelAgent
+                otelAgent:
+                  enabled: true
+                  name: "otel-agent"
+                  image:
+                    registry: docker.io
+                    repository: otel/opentelemetry-collector-contrib
+                    tag: 0.109.0
+                    pullPolicy: IfNotPresent
+
+                  # -- Image Registry Secret Names for OtelAgent.
+                  # If global.imagePullSecrets is set as well, it will merged.
+                  imagePullSecrets: []
+                    # - "otelAgent-pull-secret"
+
+                  # OpenTelemetry Collector executable
+                  command:
+                    # -- OtelAgent command name
+                    name: /otelcol-contrib
+                    # -- OtelAgent command extra arguments
+                    extraArgs: []
+
+                  configMap:
+                    # -- Specifies whether a configMap should be created (true by default)
+                    create: true
+
+                  # OtelAgent service
+                  service:
+                    # -- Annotations to use by service associated to OtelAgent
+                    annotations: {}
+                    # -- Service Type: LoadBalancer (allows external access) or NodePort (more secure, no extra cost)
+                    type: ClusterIP
+                    #  -- Traffic Policy: Local (route requests to pod on same host) or Cluster (route to all)
+                    # https://kubernetes.io/docs/reference/networking/virtual-ips/#internal-traffic-policy
+                    internalTrafficPolicy: Local
+
+                  serviceAccount:
+                    # Specifies whether a service account should be created
+                    create: true
+                    # Annotations to add to the service account
+                    annotations: {}
+                    # The name of the service account to use.
+                    # If not set and create is true, a name is generated using the fullname template
+                    name:
+
+                  # -- OtelAgent daemonset annotation.
+                  annotations: {}
+                  # -- OtelAgent pod(s) annotation.
+                  podAnnotations: {}
+                    # signoz.io/scrape: 'true'
+                    # signoz.io/port: '8888'
+                    # signoz.io/path: /metrics
+
+                  # -- Additional environments to set for OtelAgent
+                  additionalEnvs: {}
+                    # env_key: env_value
+
+                  # -- Minimum number of seconds for which a newly created Pod should be ready
+                  # without any of its containers crashing, for it to be considered available.
+                  minReadySeconds: 5
+
+                  # OtelAgent RBAC config
+                  clusterRole:
+                    # -- Specifies whether a clusterRole should be created
+                    create: true
+                    # -- Annotations to add to the clusterRole
+                    annotations: {}
+                    # -- The name of the clusterRole to use.
+                    # If not set and create is true, a name is generated using the fullname template
+                    name: ""
+                    # -- A set of rules as documented here.
+                    # ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+                    # @default -- See `values.yaml` for defaults
+                    rules:
+                      # k8sattributes processor requires these permissions
+                      - apiGroups: [""]
+                        resources: ["pods", "namespaces", "nodes", "persistentvolumeclaims"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["apps"]
+                        resources: ["replicasets"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["extensions"]
+                        resources: ["replicasets"]
+                        verbs: ["get", "list", "watch"]
+                      # other processors and receivers require these permissions
+                      - apiGroups: [""]
+                        resources: ["nodes", "endpoints"]
+                        verbs: ["list", "watch"]
+                      - apiGroups: ["batch"]
+                        resources: ["jobs"]
+                        verbs: ["list", "watch"]
+                      - apiGroups: [""]
+                        resources: ["nodes/proxy"]
+                        verbs: ["get"]
+                      - apiGroups: [""]
+                        resources: ["nodes/stats", "configmaps", "events"]
+                        verbs: ["create", "get"]
+                      - apiGroups: [""]
+                        resources: ["configmaps"]
+                        resourceNames: ["otel-container-insight-clusterleader"]
+                        verbs: ["get", "update"]
+
+                    # OtelAgent clusterRoleBinding
+                    clusterRoleBinding:
+                      # Annotations to add to the clusterRoleBinding
+                      annotations: {}
+                      # The name of the clusterRoleBinding to use.
+                      # If not set and create is true, a name is generated using the fullname template
+                      name: ""
+
+                  # Configuration for ports
+                  ports:
+                    otlp:
+                      # -- Whether to enable service port for OTLP gRPC
+                      enabled: true
+                      # -- Container port for OTLP gRPC
+                      containerPort: 4317
+                      # -- Service port for OTLP gRPC
+                      servicePort: 4317
+                      # -- Node port for OTLP gRPC
+                      nodePort: ""
+                      # -- Host port for OTLP gRPC
+                      hostPort: 4317
+                      # -- Protocol to use for OTLP gRPC
+                      protocol: TCP
+                    otlp-http:
+                      # -- Whether to enable service port for OTLP HTTP
+                      enabled: true
+                      # -- Container port for OTLP HTTP
+                      containerPort: 4318
+                      # -- Service port for OTLP HTTP
+                      servicePort: 4318
+                      # -- Node port for OTLP HTTP
+                      nodePort: ""
+                      # -- Host port for OTLP HTTP
+                      hostPort: 4318
+                      # -- Protocol to use for OTLP HTTP
+                      protocol: TCP
+                    zipkin:
+                      # -- Whether to enable service port for Zipkin
+                      enabled: false
+                      # -- Container port for Zipkin
+                      containerPort: 9411
+                      # -- Service port for Zipkin
+                      servicePort: 9411
+                      # -- Node port for Zipkin
+                      nodePort: ""
+                      # -- Host port for Zipkin
+                      hostPort: 9411
+                      # -- Protocol to use for Zipkin
+                      protocol: TCP
+                    metrics:
+                      # -- Whether to enable service port for internal metrics
+                      enabled: true
+                      # -- Container port for internal metrics
+                      containerPort: 8888
+                      # -- Service port for internal metrics
+                      servicePort: 8888
+                      # -- Node port for internal metrics
+                      nodePort: ""
+                      # -- Host port for internal metrics
+                      hostPort: 8888
+                      # -- Protocol to use for internal metrics
+                      protocol: TCP
+                    zpages:
+                      # -- Whether to enable service port for ZPages
+                      enabled: false
+                      # -- Container port for Zpages
+                      containerPort: 55679
+                      # -- Service port for Zpages
+                      servicePort: 55679
+                      # -- Node port for Zpages
+                      nodePort: ""
+                      # -- Host port for Zpages
+                      hostPort: 55679
+                      # -- Protocol to use for Zpages
+                      protocol: TCP
+                    health-check:
+                      # -- Whether to enable service port for health check
+                      enabled: true
+                      # -- Container port for health check
+                      containerPort: 13133
+                      # -- Service port for health check
+                      servicePort: 13133
+                      # -- Node port for health check
+                      nodePort: ""
+                      # -- Host port for health check
+                      hostPort: 13133
+                      # -- Protocol to use for health check
+                      protocol: TCP
+                    pprof:
+                      # -- Whether to enable service port for pprof
+                      enabled: false
+                      # -- Container port for pprof
+                      containerPort: 1777
+                      # -- Service port for pprof
+                      servicePort: 1777
+                      # -- Node port for pprof
+                      nodePort: ""
+                      # -- Host port for pprof
+                      hostPort: 1777
+                      # -- Protocol to use for pprof
+                      protocol: TCP
+
+                  # -- Configure liveness probe.
+                  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command
+                  livenessProbe:
+                    enabled: true
+                    port: 13133
+                    path: /
+                    initialDelaySeconds: 10
+                    periodSeconds: 10
+                    timeoutSeconds: 5
+                    failureThreshold: 6
+                    successThreshold: 1
+
+                  # -- Configure readiness probe.
+                  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes
+                  readinessProbe:
+                    enabled: true
+                    port: 13133
+                    path: /
+                    initialDelaySeconds: 10
+                    periodSeconds: 10
+                    timeoutSeconds: 5
+                    failureThreshold: 6
+                    successThreshold: 1
+
+                  # -- Custom liveness probe
+                  customLivenessProbe: {}
+                  # -- Custom readiness probe
+                  customReadinessProbe: {}
+
+                  ingress:
+                    # -- Enable ingress for OtelAgent
+                    enabled: false
+                    # -- Ingress Class Name to be used to identify ingress controllers
+                    className: ""
+                    # -- Annotations to OtelAgent Ingress
+                    annotations: {}
+                      # cert-manager.io/cluster-issuer: letsencrypt-prod
+                      # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+                      # nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+                      # kubernetes.io/ingress.class: nginx
+                      # kubernetes.io/tls-acme: "true"
+                    # -- OtelAgent Ingress Host names with their path details
+                    hosts:
+                      - host: otel-agent.domain.com
+                        paths:
+                          - path: /
+                            pathType: ImplementationSpecific
+                            port: 4317
+                    # -- OtelAgent Ingress TLS
+                    tls: []
+                    #  - secretName: chart-example-tls
+                    #    hosts:
+                    #      - otel-agent.domain.com
+
+                  # -- Configure resource requests and limits. Update according to your own use
+                  # case as these values might not be suitable for your workload.
+                  # ref: http://kubernetes.io/docs/user-guide/compute-resources/
+                  # @default -- See `values.yaml` for defaults
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 100Mi
+                    # limits:
+                    #   cpu: 1000m
+                    #   memory: 1Gi
+
+                  # -- OtelAgent priority class name
+                  priorityClassName: ""
+
+                  # -- OtelAgent node selector
+                  nodeSelector: {}
+
+                  # -- Toleration labels for OtelAgent pod assignment
+                  tolerations:
+                    - operator: Exists
+
+                  # -- Affinity settings for OtelAgent pod
+                  affinity: {}
+
+                  # -- Pod-level security configuration
+                  podSecurityContext: {}
+                    # fsGroup: 2000
+
+                  # -- Container security configuration
+                  securityContext: {}
+                    # capabilities:
+                    #   drop:
+                    #   - ALL
+                    # readOnlyRootFilesystem: true
+                    # runAsNonRoot: true
+                    # runAsUser: 1000
+
+                  # -- Configurations for OtelAgent
+                  # @default -- See `values.yaml` for defaults
+                  config:
+                    receivers:
+                      otlp:
+                        protocols:
+                          grpc:
+                            endpoint: 0.0.0.0:4317
+                            max_recv_msg_size_mib: 4
+                          http:
+                            endpoint: 0.0.0.0:4318
+                    processors:
+                      # Batch processor config.
+                      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/batchprocessor/README.md
+                      batch:
+                        send_batch_size: 10000
+                        timeout: 200ms
+                      # Memory Limiter processor.
+                      # If not set, will be overridden with values based on k8s resource limits.
+                      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/memorylimiterprocessor/README.md
+                      # memory_limiter: null
+                    extensions:
+                      health_check:
+                        endpoint: 0.0.0.0:13133
+                      zpages:
+                        endpoint: localhost:55679
+                      pprof:
+                        endpoint: localhost:1777
+                    exporters: {}
+                    service:
+                      telemetry:
+                        logs:
+                          encoding: json
+                        metrics:
+                          address: 0.0.0.0:8888
+                      extensions: [health_check, zpages, pprof]
+                      pipelines:
+                        traces:
+                          receivers: [otlp]
+                          processors: [batch]
+                          exporters: []
+                        metrics:
+                          receivers: [otlp]
+                          processors: [batch]
+                          exporters: []
+                        logs:
+                          receivers: [otlp]
+                          processors: [batch]
+                          exporters: []
+
+                  # -- Additional volumes for otelAgent
+                  extraVolumes: []
+                  # - name: config-volume
+                  #   configMap:
+                  #     name: special-config
+                  # - name: secret-volume
+                  #   secret:
+                  #     secretName: special-secret
+
+                  # -- Additional volume mounts for otelAgent
+                  extraVolumeMounts: []
+                  # - name: config-volume
+                  #   mountPath: /etc/config
+                  # - name: secret-volume
+                  #   mountPath: /etc/secret
+                  #   readOnly: true
+
+                # Default values for OtelDeployment
+                otelDeployment:
+                  enabled: true
+                  name: "otel-deployment"
+                  image:
+                    registry: docker.io
+                    repository: otel/opentelemetry-collector-contrib
+                    tag: 0.109.0
+                    pullPolicy: IfNotPresent
+
+                  # -- Image Registry Secret Names for OtelDeployment.
+                  # If global.imagePullSecrets is set as well, it will merged.
+                  imagePullSecrets: []
+                    # - "otelDeployment-pull-secret"
+
+                  # OpenTelemetry Collector executable
+                  command:
+                    # -- OtelDeployment command name
+                    name: /otelcol-contrib
+                    # -- OtelDeployment command extra arguments
+                    extraArgs: []
+
+                  configMap:
+                    # -- Specifies whether a configMap should be created (true by default)
+                    create: true
+
+                  # OtelDeployment service
+                  service:
+                    # -- Annotations to use by service associated to OtelDeployment
+                    annotations: {}
+                    # -- Service Type: LoadBalancer (allows external access) or NodePort (more secure, no extra cost)
+                    type: ClusterIP
+
+                  serviceAccount:
+                    # Specifies whether a service account should be created
+                    create: true
+                    # Annotations to add to the service account
+                    annotations: {}
+                    # The name of the service account to use.
+                    # If not set and create is true, a name is generated using the fullname template
+                    name:
+
+                  # -- OtelDeployment deployment annotation.
+                  annotations: {}
+                  # -- OtelDeployment pod(s) annotation.
+                  podAnnotations: {}
+                    # signoz.io/scrape: 'true'
+                    # signoz.io/port: '8888'
+                    # signoz.io/path: /metrics
+
+                  # -- Additional environments to set for OtelDeployment
+                  additionalEnvs: {}
+                    # env_key: env_value
+
+                  # -- Pod-level security configuration
+                  podSecurityContext: {}
+                    # fsGroup: 2000
+
+                  # -- Container security configuration
+                  securityContext: {}
+                    # capabilities:
+                    #   drop:
+                    #   - ALL
+                    # readOnlyRootFilesystem: true
+                    # runAsNonRoot: true
+                    # runAsUser: 1000
+
+                  # -- Minimum number of seconds for which a newly created Pod should be ready
+                  # without any of its containers crashing, for it to be considered available.
+                  minReadySeconds: 5
+
+                  # -- Number of seconds to wait for the OtelDeployment to progress before the
+                  # system reports back that the OtelDeployment has failed.
+                  progressDeadlineSeconds: 120
+
+                  # Configuration for ports
+                  ports:
+                    metrics:
+                      # -- Whether to enable service port for internal metrics
+                      enabled: false
+                      # -- Container port for internal metrics
+                      containerPort: 8888
+                      # -- Service port for internal metrics
+                      servicePort: 8888
+                      # -- Node port for internal metrics
+                      nodePort: ""
+                      # -- Protocol to use for internal metrics
+                      protocol: TCP
+                    zpages:
+                      # -- Whether to enable service port for ZPages
+                      enabled: false
+                      # -- Container port for Zpages
+                      containerPort: 55679
+                      # -- Service port for Zpages
+                      servicePort: 55679
+                      # -- Node port for Zpages
+                      nodePort: ""
+                      # -- Protocol to use for Zpages
+                      protocol: TCP
+                    health-check:
+                      # -- Whether to enable service port for health check
+                      enabled: true
+                      # -- Container port for health check
+                      containerPort: 13133
+                      # -- Service port for health check
+                      servicePort: 13133
+                      # -- Node port for health check
+                      nodePort: ""
+                      # -- Protocol to use for health check
+                      protocol: TCP
+                    pprof:
+                      # -- Whether to enable service port for pprof
+                      enabled: false
+                      # -- Container port for pprof
+                      containerPort: 1777
+                      # -- Service port for pprof
+                      servicePort: 1777
+                      # -- Node port for pprof
+                      nodePort: ""
+                      # -- Protocol to use for pprof
+                      protocol: TCP
+
+                  # -- Configure liveness probe.
+                  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command
+                  livenessProbe:
+                    enabled: true
+                    port: 13133
+                    path: /
+                    initialDelaySeconds: 10
+                    periodSeconds: 10
+                    timeoutSeconds: 5
+                    failureThreshold: 6
+                    successThreshold: 1
+
+                  # -- Configure readiness probe.
+                  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes
+                  readinessProbe:
+                    enabled: true
+                    port: 13133
+                    path: /
+                    initialDelaySeconds: 10
+                    periodSeconds: 10
+                    timeoutSeconds: 5
+                    failureThreshold: 6
+                    successThreshold: 1
+
+                  # -- Custom liveness probe
+                  customLivenessProbe: {}
+
+                  # -- Custom readiness probe
+                  customReadinessProbe: {}
+
+                  ingress:
+                    # -- Enable ingress for OtelDeployment
+                    enabled: false
+                    # -- Ingress Class Name to be used to identify ingress controllers
+                    className: ""
+                    # -- Annotations to OtelDeployment Ingress
+                    annotations: {}
+                      # cert-manager.io/cluster-issuer: letsencrypt-prod
+                      # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+                      # nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+                      # kubernetes.io/ingress.class: nginx
+                      # kubernetes.io/tls-acme: "true"
+                    # -- OtelDeployment Ingress Host names with their path details
+                    hosts:
+                      - host: otel-deployment.domain.com
+                        paths:
+                          - path: /
+                            pathType: ImplementationSpecific
+                            port: 13133
+                    # -- OtelDeployment Ingress TLS
+                    tls: []
+                    #  - secretName: chart-example-tls
+                    #    hosts:
+                    #      - otel-deployment.domain.com
+
+                  # -- Configure resource requests and limits. Update according to your own use
+                  # case as these values might not be suitable for your workload.
+                  # ref: http://kubernetes.io/docs/user-guide/compute-resources/
+                  # @default -- See `values.yaml` for defaults
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 100Mi
+                    # limits:
+                    #   cpu: 1000m
+                    #   memory: 1Gi
+
+                  # -- OtelDeployment priority class name
+                  priorityClassName: ""
+
+                  # -- OtelDeployment node selector
+                  nodeSelector: {}
+
+                  # -- Toleration labels for OtelDeployment pod assignment
+                  tolerations: []
+
+                  # -- Affinity settings for OtelDeployment pod
+                  affinity: {}
+
+                  # -- TopologySpreadConstraints describes how OtelDeployment pods ought to spread
+                  topologySpreadConstraints: []
+
+                  # OtelDeployment RBAC config
+                  clusterRole:
+                    # -- Specifies whether a clusterRole should be created
+                    create: true
+                    # -- Annotations to add to the clusterRole
+                    annotations: {}
+                    # -- The name of the clusterRole to use.
+                    # If not set and create is true, a name is generated using the fullname template
+                    name: ""
+                    # -- A set of rules as documented here.
+                    # ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+                    # @default -- See `values.yaml` for defaults
+                    rules:
+                      - apiGroups: [""]
+                        resources:
+                          - events
+                          - namespaces
+                          - namespaces/status
+                          - nodes
+                          - nodes/spec
+                          - pods
+                          - pods/status
+                          - replicationcontrollers
+                          - replicationcontrollers/status
+                          - resourcequotas
+                          - services
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["apps"]
+                        resources: ["daemonsets", "deployments", "replicasets", "statefulsets"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["extensions"]
+                        resources: ["daemonsets", "deployments", "replicasets"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["batch"]
+                        resources: ["jobs", "cronjobs"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["autoscaling"]
+                        resources: ["horizontalpodautoscalers"]
+                        verbs: ["get", "list", "watch"]
+
+                    # OtelDeployment clusterRoleBinding
+                    clusterRoleBinding:
+                      # -- Annotations to add to the clusterRoleBinding
+                      annotations: {}
+                      # -- The name of the clusterRoleBinding to use.
+                      # If not set and create is true, a name is generated using the fullname template
+                      name: ""
+
+                  # -- Configurations for OtelDeployment
+                  # @default -- See `values.yaml` for defaults
+                  config:
+                    receivers: {}
+                    processors:
+                      # Batch processor config.
+                      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/batchprocessor/README.md
+                      batch:
+                        send_batch_size: 10000
+                        timeout: 1s
+                      # Memory Limiter processor.
+                      # If not set, will be overridden with values based on k8s resource limits.
+                      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/memorylimiterprocessor/README.md
+                      # memory_limiter: null
+                    extensions:
+                      health_check:
+                        endpoint: 0.0.0.0:13133
+                      zpages:
+                        endpoint: localhost:55679
+                      pprof:
+                        endpoint: localhost:1777
+                    exporters: {}
+                    service:
+                      telemetry:
+                        logs:
+                          encoding: json
+                        metrics:
+                          address: 0.0.0.0:8888
+                      extensions: [health_check, zpages, pprof]
+                      pipelines:
+                        metrics/internal:
+                          receivers: []
+                          processors: [batch]
+                          exporters: []
+                        metrics/scraper:
+                          receivers: []
+                          processors: [batch]
+                          exporters: []
+                        logs:
+                          receivers: []
+                          processors: [batch]
+                          exporters: []
+
+                  # -- Additional volumes for otelDeployment
+                  extraVolumes: []
+                  # - name: config-volume
+                  #   configMap:
+                  #     name: special-config
+                  # - name: secret-volume
+                  #   secret:
+                  #     secretName: special-secret
+
+                  # -- Additional volume mounts for otelDeployment
+                  extraVolumeMounts: []
+                  # - name: config-volume
+                  #   mountPath: /etc/config
+                  # - name: secret-volume
+                  #   mountPath: /etc/secret
+                  #   readOnly: true
+            EOT,
+          [32m+[0m[0m <<-EOT
+                global:
+                  storageClass: gp3
+                  # -- Kubernetes cluster domain
+                  # It is used only when components are installed in different namespace
+                  clusterDomain: cluster.local
+                  # -- Kubernetes cluster name
+                  # It is used to attached to telemetry data via resource detection processor
+                  clusterName: "arc-poc-cluster"
+                  # -- Deployment environment to be attached to telemetry data
+                  deploymentEnvironment: "{environment}"
+                  # -- Kubernetes cluster cloud provider along with distribution if any.
+                  # example: `aws`, `azure`, `gcp`, `gcp/autogke`, `azure`, and `other`
+                  cloud: aws
+
+                # -- K8s infra chart name override
+                nameOverride: ""
+
+                # -- K8s infra chart full name override
+                fullnameOverride: "signoz-monitoringer"
+
+                # -- Whether to enable K8s infra chart
+                enabled: true
+                # -- Endpoint/IP Address of the SigNoz or any other OpenTelemetry backend.
+                # Set it to `ingest.signoz.io:4317` for SigNoz SaaS.
+                #
+                # If set to null and the chart is installed as dependency, it will attempt
+                # to autogenerate the endpoint of SigNoz OtelCollector.
+                otelCollectorEndpoint: "http://signoz-monitoring-otel-collector:4317"
+
+
+                # -- Which namespace to install k8s-infra components.
+                # By default installed to the namespace same as the chart.
+                namespace: ""
+
+                # -- Presets to easily set up OtelCollector configurations.
+                presets:
+                  loggingExporter:
+                    enabled: false
+                    # Verbosity of the logging export: basic, normal, detailed
+                    verbosity: basic
+                    # Number of messages initially logged each second
+                    samplingInitial: 2
+                    # Sampling rate after the initial messages are logged
+                    samplingThereafter: 500
+                  otlpExporter:
+                    enabled: true
+                  logsCollection:
+                    enabled: true
+                    startAt: end
+                    includeFilePath: true
+                    includeFileName: false
+                    # This include path patterns for log files to be collected.
+                    # By default, all container logs are collected.
+                    # If whitelist is set, this list is ignored.
+                    include:
+                      - /var/log/pods/*/*/*.log
+                    # This can be used to exclude certain log files from being collected.
+                    # By default, kube-system and hotrod, locust pods are excluded.
+                    blacklist:
+                      enabled: true
+                      signozLogs: true
+                      namespaces:
+                        - kube-system
+                      pods:
+                        - hotrod
+                        - locust
+                      containers: []
+                      additionalExclude: []
+                    # This can be used to whitelist certain log files to be collected.
+                    # By default this is disabled and all container logs are collected.
+                    # If whitelist is enabled, `include` is ignored.
+                    whitelist:
+                      enabled: false
+                      signozLogs: true
+                      namespaces: []
+                      pods: []
+                      containers: []
+                      additionalInclude: []
+                    operators:
+                      - id: container-parser
+                        type: container
+                  hostMetrics:
+                    enabled: true
+                    collectionInterval: 30s
+                    scrapers:
+                      cpu: {}
+                      load: {}
+                      memory: {}
+                      disk:
+                        exclude:
+                          devices:
+                            - ^ram\d+$
+                            - ^zram\d+$
+                            - ^loop\d+$
+                            - ^fd\d+$
+                            - ^hd[a-z]\d+$
+                            - ^sd[a-z]\d+$
+                            - ^vd[a-z]\d+$
+                            - ^xvd[a-z]\d+$
+                            - ^nvme\d+n\d+p\d+$
+                          match_type: regexp
+                      filesystem:
+                        exclude_fs_types:
+                          fs_types:
+                            - autofs
+                            - binfmt_misc
+                            - bpf
+                            - cgroup2?
+                            - configfs
+                            - debugfs
+                            - devpts
+                            - devtmpfs
+                            - fusectl
+                            - hugetlbfs
+                            - iso9660
+                            - mqueue
+                            - nsfs
+                            - overlay
+                            - proc
+                            - procfs
+                            - pstore
+                            - rpc_pipefs
+                            - securityfs
+                            - selinuxfs
+                            - squashfs
+                            - sysfs
+                            - tracefs
+                          match_type: strict
+                        exclude_mount_points:
+                          mount_points:
+                            - /dev/*
+                            - /proc/*
+                            - /sys/*
+                            - /run/credentials/*
+                            - /run/k3s/containerd/*
+                            - /var/lib/docker/*
+                            - /var/lib/containers/storage/*
+                            - /var/lib/kubelet/*
+                            - /snap/*
+                          match_type: regexp
+                      network:
+                        exclude:
+                          interfaces:
+                            - ^veth.*$
+                            - ^docker.*$
+                            - ^br-.*$
+                            - ^flannel.*$
+                            - ^cali.*$
+                            - ^cbr.*$
+                            - ^cni.*$
+                            - ^dummy.*$
+                            - ^tailscale.*$
+                            - ^lo$
+                          match_type: regexp
+                  kubeletMetrics:
+                    enabled: true
+                    collectionInterval: 30s
+                    authType: serviceAccount
+                    endpoint: ${env:K8S_HOST_IP}:10250
+                    insecureSkipVerify: true
+                    extraMetadataLabels:
+                      - container.id
+                      - k8s.volume.type
+                    metricGroups:
+                      - container
+                      - pod
+                      - node
+                      - volume
+                    metrics:
+                      k8s.node.cpu.usage:
+                        enabled: true
+                      k8s.node.uptime:
+                        enabled: true
+                      k8s.pod.cpu.usage:
+                        enabled: true
+                      k8s.pod.cpu_limit_utilization:
+                        enabled: true
+                      k8s.pod.cpu_request_utilization:
+                        enabled: true
+                      k8s.pod.memory_limit_utilization:
+                        enabled: true
+                      k8s.pod.memory_request_utilization:
+                        enabled: true
+                      k8s.pod.uptime:
+                        enabled: true
+                      container.cpu.usage:
+                        enabled: true
+                      k8s.container.cpu_limit_utilization:
+                        enabled: true
+                      k8s.container.cpu_request_utilization:
+                        enabled: true
+                      k8s.container.memory_limit_utilization:
+                        enabled: true
+                      k8s.container.memory_request_utilization:
+                        enabled: true
+                      container.uptime:
+                        enabled: true
+                  kubernetesAttributes:
+                    enabled: true
+                    # -- Whether to detect the IP address of agents and add it as an attribute to all telemetry resources.
+                    # If set to true, Agents will not make any k8s API calls, do any discovery of pods or extract any metadata.
+                    passthrough: false
+                    # -- Filters can be used to limit each OpenTelemetry agent to query pods based on specific
+                    # selector to only dramatically reducing resource requirements for very large clusters.
+                    filter:
+                      # -- Restrict each OpenTelemetry agent to query pods running on the same node
+                      node_from_env_var: K8S_NODE_NAME
+                    # -- Pod Association section allows to define rules for tagging spans, metrics,
+                    # and logs with Pod metadata.
+                    podAssociation:
+                      - sources:
+                        - from: resource_attribute
+                          name: k8s.pod.ip
+                      - sources:
+                        - from: resource_attribute
+                          name: k8s.pod.uid
+                      - sources:
+                        - from: connection
+                    # -- Which pod/namespace metadata to extract from a list of default metadata fields.
+                    extractMetadatas:
+                      - k8s.namespace.name
+                      - k8s.deployment.name
+                      - k8s.statefulset.name
+                      - k8s.daemonset.name
+                      - k8s.cronjob.name
+                      - k8s.job.name
+                      - k8s.node.name
+                      - k8s.node.uid
+                      - k8s.pod.name
+                      - k8s.pod.uid
+                      - k8s.pod.start_time
+                    # -- Which labels to extract from a list of metadata fields.
+                    extractLabels: []
+                    # -- Which annotations to extract from a list of metadata fields.
+                    extractAnnotations: []
+                  clusterMetrics:
+                    enabled: true
+                    collectionInterval: 30s
+                    resourceAttributes:
+                      k8s.pod.qos_class:
+                        enabled: true
+                      k8s.kubelet.version:
+                        enabled: true
+                      container.runtime:
+                        enabled: true
+                      container.runtime.version:
+                        enabled: true
+                      k8s.container.status.last_terminated_reason:
+                        enabled: true
+                    nodeConditionsToReport:
+                      - Ready
+                      - MemoryPressure
+                      - DiskPressure
+                      - PIDPressure
+                      - NetworkUnavailable
+                    allocatableTypesToReport:
+                      - cpu
+                      - memory
+                      # - ephemeral-storage
+                      # - storage
+                    metrics:
+                      k8s.node.condition:
+                        enabled: true
+                      k8s.pod.status_reason:
+                        enabled: true
+                  prometheus:
+                    # -- Whether to enable metrics scraping using pod annotation
+                    enabled: false
+                    # -- Prefix for the pod annotations to be used for metrics scraping
+                    annotationsPrefix: signoz.io
+                    # -- How often to scrape metrics
+                    scrapeInterval: 60s
+                    # -- Whether to only scrape metrics from pods in the same namespace
+                    namespaceScoped: false
+                    # -- If set, only scrape metrics from pods in the specified namespaces
+                    namespaces: []
+                    # -- This will include all pod labels in the metrics, could potentially cause
+                    # performance issues with large number of pods with many labels
+                    includePodLabel: false
+                    # -- This is not recommended in case of multiple containers or init containers in a pod
+                    # Since it will create multiple timeseries for the same pod metrics with different container names
+                    # containers with `-init` suffix in the name will be ignored
+                    includeContainerName: false
+                  resourceDetection:
+                    enabled: true
+                    timeout: 2s
+                    override: false
+                    envResourceAttributes: ""
+                  k8sEvents:
+                    enabled: true
+                    authType: serviceAccount
+                    # -- List of namespaces to watch for events.
+                    # all namespaces by default
+                    namespaces: []
+
+                # Default values for OtelAgent
+                otelAgent:
+                  enabled: true
+                  name: "otel-agent"
+                  image:
+                    registry: docker.io
+                    repository: otel/opentelemetry-collector-contrib
+                    tag: 0.109.0
+                    pullPolicy: IfNotPresent
+
+                  # -- Image Registry Secret Names for OtelAgent.
+                  # If global.imagePullSecrets is set as well, it will merged.
+                  imagePullSecrets: []
+                    # - "otelAgent-pull-secret"
+
+                  # OpenTelemetry Collector executable
+                  command:
+                    # -- OtelAgent command name
+                    name: /otelcol-contrib
+                    # -- OtelAgent command extra arguments
+                    extraArgs: []
+
+                  configMap:
+                    # -- Specifies whether a configMap should be created (true by default)
+                    create: true
+
+                  # OtelAgent service
+                  service:
+                    # -- Annotations to use by service associated to OtelAgent
+                    annotations: {}
+                    # -- Service Type: LoadBalancer (allows external access) or NodePort (more secure, no extra cost)
+                    type: ClusterIP
+                    #  -- Traffic Policy: Local (route requests to pod on same host) or Cluster (route to all)
+                    # https://kubernetes.io/docs/reference/networking/virtual-ips/#internal-traffic-policy
+                    internalTrafficPolicy: Local
+
+                  serviceAccount:
+                    # Specifies whether a service account should be created
+                    create: true
+                    # Annotations to add to the service account
+                    annotations: {}
+                    # The name of the service account to use.
+                    # If not set and create is true, a name is generated using the fullname template
+                    name:
+
+                  # -- OtelAgent daemonset annotation.
+                  annotations: {}
+                  # -- OtelAgent pod(s) annotation.
+                  podAnnotations: {}
+                    # signoz.io/scrape: 'true'
+                    # signoz.io/port: '8888'
+                    # signoz.io/path: /metrics
+
+                  # -- Additional environments to set for OtelAgent
+                  additionalEnvs: {}
+                    # env_key: env_value
+
+                  # -- Minimum number of seconds for which a newly created Pod should be ready
+                  # without any of its containers crashing, for it to be considered available.
+                  minReadySeconds: 5
+
+                  # OtelAgent RBAC config
+                  clusterRole:
+                    # -- Specifies whether a clusterRole should be created
+                    create: true
+                    # -- Annotations to add to the clusterRole
+                    annotations: {}
+                    # -- The name of the clusterRole to use.
+                    # If not set and create is true, a name is generated using the fullname template
+                    name: ""
+                    # -- A set of rules as documented here.
+                    # ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+                    # @default -- See `values.yaml` for defaults
+                    rules:
+                      # k8sattributes processor requires these permissions
+                      - apiGroups: [""]
+                        resources: ["pods", "namespaces", "nodes", "persistentvolumeclaims"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["apps"]
+                        resources: ["replicasets"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["extensions"]
+                        resources: ["replicasets"]
+                        verbs: ["get", "list", "watch"]
+                      # other processors and receivers require these permissions
+                      - apiGroups: [""]
+                        resources: ["nodes", "endpoints"]
+                        verbs: ["list", "watch"]
+                      - apiGroups: ["batch"]
+                        resources: ["jobs"]
+                        verbs: ["list", "watch"]
+                      - apiGroups: [""]
+                        resources: ["nodes/proxy"]
+                        verbs: ["get"]
+                      - apiGroups: [""]
+                        resources: ["nodes/stats", "configmaps", "events"]
+                        verbs: ["create", "get"]
+                      - apiGroups: [""]
+                        resources: ["configmaps"]
+                        resourceNames: ["otel-container-insight-clusterleader"]
+                        verbs: ["get", "update"]
+
+                    # OtelAgent clusterRoleBinding
+                    clusterRoleBinding:
+                      # Annotations to add to the clusterRoleBinding
+                      annotations: {}
+                      # The name of the clusterRoleBinding to use.
+                      # If not set and create is true, a name is generated using the fullname template
+                      name: ""
+
+                  # Configuration for ports
+                  ports:
+                    otlp:
+                      # -- Whether to enable service port for OTLP gRPC
+                      enabled: true
+                      # -- Container port for OTLP gRPC
+                      containerPort: 4317
+                      # -- Service port for OTLP gRPC
+                      servicePort: 4317
+                      # -- Node port for OTLP gRPC
+                      nodePort: ""
+                      # -- Host port for OTLP gRPC
+                      hostPort: 4317
+                      # -- Protocol to use for OTLP gRPC
+                      protocol: TCP
+                    otlp-http:
+                      # -- Whether to enable service port for OTLP HTTP
+                      enabled: true
+                      # -- Container port for OTLP HTTP
+                      containerPort: 4318
+                      # -- Service port for OTLP HTTP
+                      servicePort: 4318
+                      # -- Node port for OTLP HTTP
+                      nodePort: ""
+                      # -- Host port for OTLP HTTP
+                      hostPort: 4318
+                      # -- Protocol to use for OTLP HTTP
+                      protocol: TCP
+                    zipkin:
+                      # -- Whether to enable service port for Zipkin
+                      enabled: false
+                      # -- Container port for Zipkin
+                      containerPort: 9411
+                      # -- Service port for Zipkin
+                      servicePort: 9411
+                      # -- Node port for Zipkin
+                      nodePort: ""
+                      # -- Host port for Zipkin
+                      hostPort: 9411
+                      # -- Protocol to use for Zipkin
+                      protocol: TCP
+                    metrics:
+                      # -- Whether to enable service port for internal metrics
+                      enabled: true
+                      # -- Container port for internal metrics
+                      containerPort: 8888
+                      # -- Service port for internal metrics
+                      servicePort: 8888
+                      # -- Node port for internal metrics
+                      nodePort: ""
+                      # -- Host port for internal metrics
+                      hostPort: 8888
+                      # -- Protocol to use for internal metrics
+                      protocol: TCP
+                    zpages:
+                      # -- Whether to enable service port for ZPages
+                      enabled: false
+                      # -- Container port for Zpages
+                      containerPort: 55679
+                      # -- Service port for Zpages
+                      servicePort: 55679
+                      # -- Node port for Zpages
+                      nodePort: ""
+                      # -- Host port for Zpages
+                      hostPort: 55679
+                      # -- Protocol to use for Zpages
+                      protocol: TCP
+                    health-check:
+                      # -- Whether to enable service port for health check
+                      enabled: true
+                      # -- Container port for health check
+                      containerPort: 13133
+                      # -- Service port for health check
+                      servicePort: 13133
+                      # -- Node port for health check
+                      nodePort: ""
+                      # -- Host port for health check
+                      hostPort: 13133
+                      # -- Protocol to use for health check
+                      protocol: TCP
+                    pprof:
+                      # -- Whether to enable service port for pprof
+                      enabled: false
+                      # -- Container port for pprof
+                      containerPort: 1777
+                      # -- Service port for pprof
+                      servicePort: 1777
+                      # -- Node port for pprof
+                      nodePort: ""
+                      # -- Host port for pprof
+                      hostPort: 1777
+                      # -- Protocol to use for pprof
+                      protocol: TCP
+
+                  # -- Configure liveness probe.
+                  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command
+                  livenessProbe:
+                    enabled: true
+                    port: 13133
+                    path: /
+                    initialDelaySeconds: 10
+                    periodSeconds: 10
+                    timeoutSeconds: 5
+                    failureThreshold: 6
+                    successThreshold: 1
+
+                  # -- Configure readiness probe.
+                  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes
+                  readinessProbe:
+                    enabled: true
+                    port: 13133
+                    path: /
+                    initialDelaySeconds: 10
+                    periodSeconds: 10
+                    timeoutSeconds: 5
+                    failureThreshold: 6
+                    successThreshold: 1
+
+                  # -- Custom liveness probe
+                  customLivenessProbe: {}
+                  # -- Custom readiness probe
+                  customReadinessProbe: {}
+
+                  ingress:
+                    # -- Enable ingress for OtelAgent
+                    enabled: false
+                    # -- Ingress Class Name to be used to identify ingress controllers
+                    className: ""
+                    # -- Annotations to OtelAgent Ingress
+                    annotations: {}
+                      # cert-manager.io/cluster-issuer: letsencrypt-prod
+                      # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+                      # nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+                      # kubernetes.io/ingress.class: nginx
+                      # kubernetes.io/tls-acme: "true"
+                    # -- OtelAgent Ingress Host names with their path details
+                    hosts:
+                      - host: otel-agent.domain.com
+                        paths:
+                          - path: /
+                            pathType: ImplementationSpecific
+                            port: 4317
+                    # -- OtelAgent Ingress TLS
+                    tls: []
+                    #  - secretName: chart-example-tls
+                    #    hosts:
+                    #      - otel-agent.domain.com
+
+                  # -- Configure resource requests and limits. Update according to your own use
+                  # case as these values might not be suitable for your workload.
+                  # ref: http://kubernetes.io/docs/user-guide/compute-resources/
+                  # @default -- See `values.yaml` for defaults
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 100Mi
+                    # limits:
+                    #   cpu: 1000m
+                    #   memory: 1Gi
+
+                  # -- OtelAgent priority class name
+                  priorityClassName: ""
+
+                  # -- OtelAgent node selector
+                  nodeSelector: {}
+
+                  # -- Toleration labels for OtelAgent pod assignment
+                  tolerations:
+                    - operator: Exists
+
+                  # -- Affinity settings for OtelAgent pod
+                  affinity: {}
+
+                  # -- Pod-level security configuration
+                  podSecurityContext: {}
+                    # fsGroup: 2000
+
+                  # -- Container security configuration
+                  securityContext: {}
+                    # capabilities:
+                    #   drop:
+                    #   - ALL
+                    # readOnlyRootFilesystem: true
+                    # runAsNonRoot: true
+                    # runAsUser: 1000
+
+                  # -- Configurations for OtelAgent
+                  # @default -- See `values.yaml` for defaults
+                  config:
+                    receivers:
+                      otlp:
+                        protocols:
+                          grpc:
+                            endpoint: 0.0.0.0:4317
+                            max_recv_msg_size_mib: 4
+                          http:
+                            endpoint: 0.0.0.0:4318
+                    processors:
+                      # Batch processor config.
+                      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/batchprocessor/README.md
+                      batch:
+                        send_batch_size: 10000
+                        timeout: 200ms
+                      # Memory Limiter processor.
+                      # If not set, will be overridden with values based on k8s resource limits.
+                      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/memorylimiterprocessor/README.md
+                      # memory_limiter: null
+                    extensions:
+                      health_check:
+                        endpoint: 0.0.0.0:13133
+                      zpages:
+                        endpoint: localhost:55679
+                      pprof:
+                        endpoint: localhost:1777
+                    exporters: {}
+                    service:
+                      telemetry:
+                        logs:
+                          encoding: json
+                        metrics:
+                          address: 0.0.0.0:8888
+                      extensions: [health_check, zpages, pprof]
+                      pipelines:
+                        traces:
+                          receivers: [otlp]
+                          processors: [batch]
+                          exporters: []
+                        metrics:
+                          receivers: [otlp]
+                          processors: [batch]
+                          exporters: []
+                        logs:
+                          receivers: [otlp]
+                          processors: [batch]
+                          exporters: []
+
+                  # -- Additional volumes for otelAgent
+                  extraVolumes: []
+                  # - name: config-volume
+                  #   configMap:
+                  #     name: special-config
+                  # - name: secret-volume
+                  #   secret:
+                  #     secretName: special-secret
+
+                  # -- Additional volume mounts for otelAgent
+                  extraVolumeMounts: []
+                  # - name: config-volume
+                  #   mountPath: /etc/config
+                  # - name: secret-volume
+                  #   mountPath: /etc/secret
+                  #   readOnly: true
+
+                # Default values for OtelDeployment
+                otelDeployment:
+                  enabled: true
+                  name: "otel-deployment"
+                  image:
+                    registry: docker.io
+                    repository: otel/opentelemetry-collector-contrib
+                    tag: 0.109.0
+                    pullPolicy: IfNotPresent
+
+                  # -- Image Registry Secret Names for OtelDeployment.
+                  # If global.imagePullSecrets is set as well, it will merged.
+                  imagePullSecrets: []
+                    # - "otelDeployment-pull-secret"
+
+                  # OpenTelemetry Collector executable
+                  command:
+                    # -- OtelDeployment command name
+                    name: /otelcol-contrib
+                    # -- OtelDeployment command extra arguments
+                    extraArgs: []
+
+                  configMap:
+                    # -- Specifies whether a configMap should be created (true by default)
+                    create: true
+
+                  # OtelDeployment service
+                  service:
+                    # -- Annotations to use by service associated to OtelDeployment
+                    annotations: {}
+                    # -- Service Type: LoadBalancer (allows external access) or NodePort (more secure, no extra cost)
+                    type: ClusterIP
+
+                  serviceAccount:
+                    # Specifies whether a service account should be created
+                    create: true
+                    # Annotations to add to the service account
+                    annotations: {}
+                    # The name of the service account to use.
+                    # If not set and create is true, a name is generated using the fullname template
+                    name:
+
+                  # -- OtelDeployment deployment annotation.
+                  annotations: {}
+                  # -- OtelDeployment pod(s) annotation.
+                  podAnnotations: {}
+                    # signoz.io/scrape: 'true'
+                    # signoz.io/port: '8888'
+                    # signoz.io/path: /metrics
+
+                  # -- Additional environments to set for OtelDeployment
+                  additionalEnvs: {}
+                    # env_key: env_value
+
+                  # -- Pod-level security configuration
+                  podSecurityContext: {}
+                    # fsGroup: 2000
+
+                  # -- Container security configuration
+                  securityContext: {}
+                    # capabilities:
+                    #   drop:
+                    #   - ALL
+                    # readOnlyRootFilesystem: true
+                    # runAsNonRoot: true
+                    # runAsUser: 1000
+
+                  # -- Minimum number of seconds for which a newly created Pod should be ready
+                  # without any of its containers crashing, for it to be considered available.
+                  minReadySeconds: 5
+
+                  # -- Number of seconds to wait for the OtelDeployment to progress before the
+                  # system reports back that the OtelDeployment has failed.
+                  progressDeadlineSeconds: 120
+
+                  # Configuration for ports
+                  ports:
+                    metrics:
+                      # -- Whether to enable service port for internal metrics
+                      enabled: false
+                      # -- Container port for internal metrics
+                      containerPort: 8888
+                      # -- Service port for internal metrics
+                      servicePort: 8888
+                      # -- Node port for internal metrics
+                      nodePort: ""
+                      # -- Protocol to use for internal metrics
+                      protocol: TCP
+                    zpages:
+                      # -- Whether to enable service port for ZPages
+                      enabled: false
+                      # -- Container port for Zpages
+                      containerPort: 55679
+                      # -- Service port for Zpages
+                      servicePort: 55679
+                      # -- Node port for Zpages
+                      nodePort: ""
+                      # -- Protocol to use for Zpages
+                      protocol: TCP
+                    health-check:
+                      # -- Whether to enable service port for health check
+                      enabled: true
+                      # -- Container port for health check
+                      containerPort: 13133
+                      # -- Service port for health check
+                      servicePort: 13133
+                      # -- Node port for health check
+                      nodePort: ""
+                      # -- Protocol to use for health check
+                      protocol: TCP
+                    pprof:
+                      # -- Whether to enable service port for pprof
+                      enabled: false
+                      # -- Container port for pprof
+                      containerPort: 1777
+                      # -- Service port for pprof
+                      servicePort: 1777
+                      # -- Node port for pprof
+                      nodePort: ""
+                      # -- Protocol to use for pprof
+                      protocol: TCP
+
+                  # -- Configure liveness probe.
+                  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command
+                  livenessProbe:
+                    enabled: true
+                    port: 13133
+                    path: /
+                    initialDelaySeconds: 10
+                    periodSeconds: 10
+                    timeoutSeconds: 5
+                    failureThreshold: 6
+                    successThreshold: 1
+
+                  # -- Configure readiness probe.
+                  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes
+                  readinessProbe:
+                    enabled: true
+                    port: 13133
+                    path: /
+                    initialDelaySeconds: 10
+                    periodSeconds: 10
+                    timeoutSeconds: 5
+                    failureThreshold: 6
+                    successThreshold: 1
+
+                  # -- Custom liveness probe
+                  customLivenessProbe: {}
+
+                  # -- Custom readiness probe
+                  customReadinessProbe: {}
+
+                  ingress:
+                    # -- Enable ingress for OtelDeployment
+                    enabled: false
+                    # -- Ingress Class Name to be used to identify ingress controllers
+                    className: ""
+                    # -- Annotations to OtelDeployment Ingress
+                    annotations: {}
+                      # cert-manager.io/cluster-issuer: letsencrypt-prod
+                      # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+                      # nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+                      # kubernetes.io/ingress.class: nginx
+                      # kubernetes.io/tls-acme: "true"
+                    # -- OtelDeployment Ingress Host names with their path details
+                    hosts:
+                      - host: otel-deployment.domain.com
+                        paths:
+                          - path: /
+                            pathType: ImplementationSpecific
+                            port: 13133
+                    # -- OtelDeployment Ingress TLS
+                    tls: []
+                    #  - secretName: chart-example-tls
+                    #    hosts:
+                    #      - otel-deployment.domain.com
+
+                  # -- Configure resource requests and limits. Update according to your own use
+                  # case as these values might not be suitable for your workload.
+                  # ref: http://kubernetes.io/docs/user-guide/compute-resources/
+                  # @default -- See `values.yaml` for defaults
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 100Mi
+                    # limits:
+                    #   cpu: 1000m
+                    #   memory: 1Gi
+
+                  # -- OtelDeployment priority class name
+                  priorityClassName: ""
+
+                  # -- OtelDeployment node selector
+                  nodeSelector: {}
+
+                  # -- Toleration labels for OtelDeployment pod assignment
+                  tolerations: []
+
+                  # -- Affinity settings for OtelDeployment pod
+                  affinity: {}
+
+                  # -- TopologySpreadConstraints describes how OtelDeployment pods ought to spread
+                  topologySpreadConstraints: []
+
+                  # OtelDeployment RBAC config
+                  clusterRole:
+                    # -- Specifies whether a clusterRole should be created
+                    create: true
+                    # -- Annotations to add to the clusterRole
+                    annotations: {}
+                    # -- The name of the clusterRole to use.
+                    # If not set and create is true, a name is generated using the fullname template
+                    name: ""
+                    # -- A set of rules as documented here.
+                    # ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+                    # @default -- See `values.yaml` for defaults
+                    rules:
+                      - apiGroups: [""]
+                        resources:
+                          - events
+                          - namespaces
+                          - namespaces/status
+                          - nodes
+                          - nodes/spec
+                          - pods
+                          - pods/status
+                          - replicationcontrollers
+                          - replicationcontrollers/status
+                          - resourcequotas
+                          - services
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["apps"]
+                        resources: ["daemonsets", "deployments", "replicasets", "statefulsets"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["extensions"]
+                        resources: ["daemonsets", "deployments", "replicasets"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["batch"]
+                        resources: ["jobs", "cronjobs"]
+                        verbs: ["get", "list", "watch"]
+                      - apiGroups: ["autoscaling"]
+                        resources: ["horizontalpodautoscalers"]
+                        verbs: ["get", "list", "watch"]
+
+                    # OtelDeployment clusterRoleBinding
+                    clusterRoleBinding:
+                      # -- Annotations to add to the clusterRoleBinding
+                      annotations: {}
+                      # -- The name of the clusterRoleBinding to use.
+                      # If not set and create is true, a name is generated using the fullname template
+                      name: ""
+
+                  # -- Configurations for OtelDeployment
+                  # @default -- See `values.yaml` for defaults
+                  config:
+                    receivers: {}
+                    processors:
+                      # Batch processor config.
+                      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/batchprocessor/README.md
+                      batch:
+                        send_batch_size: 10000
+                        timeout: 1s
+                      # Memory Limiter processor.
+                      # If not set, will be overridden with values based on k8s resource limits.
+                      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/memorylimiterprocessor/README.md
+                      # memory_limiter: null
+                    extensions:
+                      health_check:
+                        endpoint: 0.0.0.0:13133
+                      zpages:
+                        endpoint: localhost:55679
+                      pprof:
+                        endpoint: localhost:1777
+                    exporters: {}
+                    service:
+                      telemetry:
+                        logs:
+                          encoding: json
+                        metrics:
+                          address: 0.0.0.0:8888
+                      extensions: [health_check, zpages, pprof]
+                      pipelines:
+                        metrics/internal:
+                          receivers: []
+                          processors: [batch]
+                          exporters: []
+                        metrics/scraper:
+                          receivers: []
+                          processors: [batch]
+                          exporters: []
+                        logs:
+                          receivers: []
+                          processors: [batch]
+                          exporters: []
+
+                  # -- Additional volumes for otelDeployment
+                  extraVolumes: []
+                  # - name: config-volume
+                  #   configMap:
+                  #     name: special-config
+                  # - name: secret-volume
+                  #   secret:
+                  #     secretName: special-secret
+
+                  # -- Additional volume mounts for otelDeployment
+                  extraVolumeMounts: []
+                  # - name: config-volume
+                  #   mountPath: /etc/config
+                  # - name: secret-volume
+                  #   mountPath: /etc/secret
+                  #   readOnly: true
+            EOT,
+        ]
+        [90m# (26 unchanged attributes hidden)[0m[0m
+    }
+
+[1mPlan:[0m 0 to add, 1 to change, 0 to destroy.
+[0m[90m
+─────────────────────────────────────────────────────────────────────────────[0m
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.

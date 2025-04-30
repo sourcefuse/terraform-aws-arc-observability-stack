@@ -19,8 +19,8 @@ variable "search_engine" {
   description = "(optional) Search engine for logs"
   default     = null // elasticsearch
   validation {
-    condition     = var.search_engine == null ? true : contains(["elasticsearch", "opensearch", null], var.search_engine)
-    error_message = "Invalid value for search_engine. Allowed values are 'elasticsearch' , 'opensearch' and null . null - To disable installing Elasticsearch"
+    condition     = var.search_engine == null ? true : contains(["elasticsearch", "opensearch", "signoz", null], var.search_engine)
+    error_message = "Invalid value for search_engine. Allowed values are 'elasticsearch' , 'opensearch' , 'signoz' and null . null - To disable installing Elasticsearch"
   }
 }
 
@@ -29,8 +29,8 @@ variable "metrics_monitoring_system" {
   description = "Monotoring system for metrics"
   default     = null
   validation {
-    condition     = var.metrics_monitoring_system == null ? true : contains(["prometheus", null], var.metrics_monitoring_system)
-    error_message = "Invalid value for metrics_monitoring_system. Allowed values are 'prometheus' and null . null - To disable installing Prometheus or other systems"
+    condition     = var.metrics_monitoring_system == null ? true : contains(["prometheus", "signoz", null], var.metrics_monitoring_system)
+    error_message = "Invalid value for metrics_monitoring_system. Allowed values are 'prometheus' , 'signoz' and null . null - To disable installing Prometheus or other systems"
   }
 }
 
@@ -39,8 +39,18 @@ variable "log_aggregator" {
   description = "(optional) Log aggregator to choose"
   default     = null
   validation {
-    condition     = var.log_aggregator == null ? true : contains(["fluentd", "fluent-bit", null], var.log_aggregator)
-    error_message = "Invalid value for log_aggregator. Allowed values are 'fluentd' and 'fluent-bit'. To disable installing Log aggregator"
+    condition     = var.log_aggregator == null ? true : contains(["fluentd", "fluent-bit", "signoz", null], var.log_aggregator)
+    error_message = "Invalid value for log_aggregator. Allowed values are 'signoz' , 'fluentd' and 'fluent-bit'. To disable installing Log aggregator"
+  }
+}
+
+variable "tracing_stack" {
+  type        = string
+  description = "(optional) Distributed tracing stack"
+  default     = null
+  validation {
+    condition     = var.tracing_stack == null ? true : contains(["jaeger", "signoz", null], var.tracing_stack)
+    error_message = "Invalid value for tracing_stack. Allowed values are 'jaeger'"
   }
 }
 
@@ -298,4 +308,93 @@ variable "prometheus_config" {
     }
   }
 
+}
+
+variable "signoz_config" {
+  type = object({
+    k8s_namespace = object({
+      name   = optional(string, "signoz")
+      create = optional(bool, false)
+    })
+    name          = string
+    storage_class = optional(string, "gp3")
+    cluster_name  = string
+    clickhouse = optional(object({
+      user           = optional(string, "admin")
+      password       = optional(string, "27ff0399-0d3a-4bd8-919d-17c2181e6fb9")
+      cpu_limit      = optional(string, "2000m")
+      memory_limit   = optional(string, "4Gi")
+      cpu_request    = optional(string, "100m")
+      memory_request = optional(string, "200Mi")
+      storage        = optional(string, "20Gi")
+    }))
+
+    signoz_bin = optional(object({
+      replica_count   = optional(number, 1)
+      cpu_limit       = optional(string, "750m")
+      memory_limit    = optional(string, "1000Mi")
+      cpu_request     = optional(string, "100m")
+      memory_request  = optional(string, "200Mi")
+      enable_ingress  = optional(bool, false)
+      certificate_arn = optional(string, null)
+      domain          = optional(string, "signoz.example.com")
+    }))
+
+    alertmanager = optional(object({
+      enable          = optional(bool, false)
+      replica_count   = optional(number, 1)
+      cpu_limit       = optional(string, "750m")
+      memory_limit    = optional(string, "1000Mi")
+      cpu_request     = optional(string, "100m")
+      memory_request  = optional(string, "200Mi")
+      storage         = optional(string, "100Mi")
+      enable_ingress  = optional(bool, false)
+      certificate_arn = optional(string, null)
+      domain          = optional(string, "signoz.example.com")
+    }))
+
+    otel_collector = optional(object({
+      cpu_limit       = optional(string, "1")
+      memory_limit    = optional(string, "2Gi")
+      cpu_request     = optional(string, "100m")
+      memory_request  = optional(string, "200Mi")
+      storage         = optional(string, "100Mi")
+      enable_ingress  = optional(bool, false)
+      certificate_arn = optional(string, null)
+      domain          = optional(string, "signoz.example.com")
+    }))
+  })
+
+  description = <<-EOT
+  Configuration for observability components in the monitoring stack. This variable encapsulates
+  settings for the following components:
+
+  - ClickHouse:
+    Used as the backend storage engine for observability data (like traces and metrics).
+    Includes credentials and resource limits/requests for tuning performance.
+
+  - SigNoz:
+    Provides the UI and analytics for monitoring and tracing applications.
+    Includes ingress setup and compute resource configuration.
+
+  - Alertmanager:
+    Handles alerting rules and notifications for monitoring data.
+    Includes configuration for storage, scaling, and ingress settings.
+
+  - OTEL Collector:
+    Collects telemetry data (logs, metrics, traces) from the applications and
+    routes it to appropriate backends.
+    Includes resource definitions and optional ingress configuration.
+
+  This structure enables centralized management of observability stack deployment in Kubernetes
+  via Terraform.
+  EOT
+  default = {
+    k8s_namespace = {
+      name   = "signoz"
+      create = true
+    }
+    name         = null
+    cluster_name = null
+  }
 }

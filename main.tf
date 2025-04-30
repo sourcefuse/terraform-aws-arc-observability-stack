@@ -107,3 +107,45 @@ module "prometheus" {
 
   tags = var.tags
 }
+
+module "jaeger" {
+  source = "./modules/jaeger"
+
+  count = var.tracing_stack == "jaeger" ? 1 : 0
+
+  name                 = var.prometheus_config.name
+  k8s_namespace        = var.prometheus_config.k8s_namespace.name
+  create_k8s_namespace = var.prometheus_config.k8s_namespace.create
+
+  log_level = var.prometheus_config.log_level
+  # replica_count             = var.prometheus_config.replica_count
+  # storage                   = var.prometheus_config.storage
+
+
+  resources = {
+    cpu_limit      = var.prometheus_config.cpu_limit
+    memory_limit   = var.prometheus_config.memory_limit
+    cpu_request    = var.prometheus_config.cpu_request
+    memory_request = var.prometheus_config.memory_request
+  }
+
+}
+
+module "signoz" {
+  source = "./modules/signoz"
+
+  count = (
+    var.search_engine == "signoz" ||
+    var.log_aggregator == "signoz" ||
+    var.metrics_monitoring_system == "signoz" ||
+    var.tracing_stack == "signoz"
+  ) ? 1 : 0
+
+
+  k8s_namespace        = var.signoz_config.k8s_namespace.name
+  create_k8s_namespace = var.signoz_config.k8s_namespace.create
+  environment          = var.environment
+
+  signoz_config = var.signoz_config
+
+}

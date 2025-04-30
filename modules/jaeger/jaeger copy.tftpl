@@ -1,0 +1,311 @@
+provisionDataStore:
+  cassandra: false
+  elasticsearch: true
+  kafka: false
+
+tag: ""
+
+nameOverride: ""
+fullnameOverride: "${name}"
+
+storage:
+  type: elasticsearch
+  elasticsearch:
+    scheme: http
+    host: elasticsearch-master
+    port: 9200
+    anonymous: false
+    user: elastic
+    usePassword: true
+    password: changeme
+    # indexPrefix: test
+    ## Use existing secret (ignores previous password)
+    # existingSecret:
+    # existingSecretKey:
+    nodesWanOnly: false
+    extraEnv: []
+    cmdlineParams: {}
+    tls:
+      enabled: false
+      secretName: es-tls-secret
+      # The mount properties of the secret
+      mountPath: /es-tls/ca-cert.pem
+      subPath: ca-cert.pem
+      # How ES_TLS_CA variable will be set in the various components
+      ca: /es-tls/ca-cert.pem
+
+elasticsearch:
+  fullnameOverride: "elasticsearch"
+  image:
+    repository: docker.io/bitnami/elasticsearch
+  master:
+    masterOnly: false
+    replicaCount: 3
+    extraEnvVars:
+      - name: ES_JAVA_OPTS
+        value: "-Xmx20g -Xms20g"
+    persistence:
+      enabled: true
+      storageClass: gp3
+      accessModes: [ "ReadWriteOnce" ]
+      size: 100gb
+  extraConfig:
+    cluster.max_shards_per_node: 3000
+  sysctlImage:
+    registry: ""
+    repository: docker.io/bitnami/os-shell
+    tag: 12-debian-12-r18
+  volumePermissions:
+    enabled: true
+    image:
+      registry: ""
+      repository: docker.io/bitnami/os-shell
+      tag: 12-debian-12-r18
+  data:
+    replicaCount: 0
+  coordinating:
+    replicaCount: 0
+  ingest:
+    replicaCount: 0
+
+ingester:
+  enabled: false
+
+agent:
+  podSecurityContext: {}
+  securityContext: {}
+  enabled: false
+
+collector:
+  podSecurityContext: {}
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsUser: 2000
+    runAsGroup: 2000
+    capabilities:
+      drop: ["ALL"]
+  enabled: true
+  annotations: {}
+  image: jaegertracing/jaeger-collector
+  imagePullSecrets: []
+  pullPolicy: IfNotPresent
+  dnsPolicy: ClusterFirst
+  cmdlineParams: {}
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+  service:
+    annotations: {}
+    loadBalancerIP: ''
+    loadBalancerSourceRanges: []
+    type: ClusterIP
+    grpc:
+      port: 14250
+    http:
+      port: 14268
+    zipkin: {}
+  ingress:
+    enabled: false
+    annotations: {}
+  resources:
+   limits:
+     memory: 50Mi
+   requests:
+     cpu: 2m
+     memory: 35Mi
+  serviceAccount:
+    create: false
+    automountServiceAccountToken: true
+    name: "eks-jaeger-sa"
+    annotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podLabels: {}
+  extraSecretMounts: []
+  extraConfigmapMounts: []
+  priorityClassName: ""
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+
+query:
+  enabled: true
+  basePath: /
+  oAuthSidecar:
+    enabled: false
+    resources: {}
+    image:
+      registry: quay.io
+      repository: oauth2-proxy/oauth2-proxy
+      tag: v7.6.0
+      digest: ""
+      pullPolicy: IfNotPresent
+      pullSecrets: []
+    containerPort: 4180
+    args: []
+    extraEnv: []
+    extraConfigmapMounts: []
+    extraSecretMounts: []
+  podSecurityContext: {}
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsUser: 2000
+    runAsGroup: 2000
+    capabilities:
+      drop: ["ALL"]
+  agentSidecar:
+    enabled: true
+  annotations: {}
+  image: jaegertracing/jaeger-query
+  imagePullSecrets: []
+  pullPolicy: IfNotPresent
+  dnsPolicy: ClusterFirst
+  cmdlineParams: {}
+  extraEnv: []
+  replicaCount: 1
+  service:
+    annotations: {}
+    type: NodePort
+    loadBalancerSourceRanges: []
+    port: 80
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/group.name: ingress-group
+      alb.ingress.kubernetes.io/group.order: '140'
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/certificate-arn: 'arn:aws:acm:eu-west-1:613534145040:certificate/95a17c70-dc9f-41ba-965b-c4b1e86272b3'
+    hosts:
+      - tracing.eu.dev.com
+    health:
+      exposed: false
+  resources:
+    limits:
+       memory: 350Mi
+    requests:
+       cpu: 2m
+       memory: 20Mi
+  serviceAccount:
+    create: false
+    automountServiceAccountToken: true
+    name: "eks-jaeger-sa"
+    annotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podLabels: {}
+  extraConfigmapMounts: []
+  extraSecretMounts: []
+  extraVolumeMounts:
+  - name: secrets-store-inline
+    mountPath: "/mnt/secrets-store"
+    readOnly: true
+  extraVolumes:
+  - name: secrets-store-inline
+    csi:
+      driver: secrets-store.csi.k8s.io
+      readOnly: true
+      volumeAttributes:
+        secretProviderClass: "okta-secret-credentials"
+  sidecars: []
+  priorityClassName: ""
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+
+spark:
+  enabled: false
+  annotations: {}
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsUser: 2000
+    runAsGroup: 2000
+    capabilities:
+      drop: ["ALL"]
+  image: jaegertracing/spark-dependencies
+  imagePullSecrets: []
+  tag: latest
+  pullPolicy: Always
+  cmdlineParams: {}
+  extraEnv: []
+  schedule: "49 23 * * *"
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  concurrencyPolicy: Forbid
+  resources:
+    limits:
+      memory: 50Mi
+    requests:
+      cpu: 5m
+      memory: 30Mi
+  serviceAccount:
+    create: false
+    automountServiceAccountToken: true
+    name: "eks-jaeger-sa"
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  extraSecretMounts: []
+  extraConfigmapMounts: []
+  podAnnotations: {}
+  podLabels: {}
+
+esIndexCleaner:
+  enabled: false
+
+
+esRollover:
+  enabled: true
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsUser: 2000
+    runAsGroup: 2000
+    capabilities:
+      drop: ["ALL"]
+  podSecurityContext:
+    runAsUser: 1000
+  annotations: {}
+  image: jaegertracing/jaeger-es-rollover
+  imagePullSecrets: []
+  tag: latest
+  pullPolicy: Always
+  cmdlineParams: {}
+  extraEnv:
+    - name: CONDITIONS
+      value: '{"max_age": "1d"}'
+  schedule: "*/60 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  resources: {}
+  serviceAccount:
+    create: false
+    automountServiceAccountToken: false
+    name: "eks-jaeger-sa"
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  extraSecretMounts: []
+  extraConfigmapMounts: []
+  podAnnotations: {}
+  podLabels: {}
+  initHook:
+    extraEnv: []
+    annotations: {}
+    podAnnotations: {}
+    podLabels: {}
+    ttlSecondsAfterFinished: 120
+
+esLookback:
+  enabled: false
+
+hotrod:
+  enabled: false
+
+extraObjects: []
