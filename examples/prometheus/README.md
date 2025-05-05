@@ -46,5 +46,5 @@
 
 | Name | Description |
 |------|-------------|
-| <a name="output_grafana_lb_arn"></a> [grafana\_lb\_arn](#output\_grafana\_lb\_arn) | Grafana ingress loadbalancer ARN |
+| <a name="output_grafana_lb_dns"></a> [grafana\_lb\_dns](#output\_grafana\_lb\_dns) | Grafana ingress loadbalancer DNS |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

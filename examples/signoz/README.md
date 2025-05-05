@@ -29,6 +29,7 @@
 
 | Name | Type |
 |------|------|
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 | [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 
@@ -42,5 +43,7 @@
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_signoz_lb_arn"></a> [signoz\_lb\_arn](#output\_signoz\_lb\_arn) | Signoz ingress loadbalancer DNS |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

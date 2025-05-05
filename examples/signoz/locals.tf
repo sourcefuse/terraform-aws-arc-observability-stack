@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 locals {
   signoz_config = {
     name          = "signoz-monitoring"
@@ -12,7 +14,6 @@ locals {
 
     clickhouse = {
       user           = "admin"
-      password       = "27ff0399-0d3a-4bd8-919d-17c2181e6fb9"
       cpu_limit      = "2000m"
       memory_limit   = "4Gi"
       cpu_request    = "100m"
@@ -21,14 +22,15 @@ locals {
     }
 
     signoz_bin = {
-      replica_count  = 1
-      cpu_limit      = "750m"
-      memory_limit   = "1000Mi"
-      cpu_request    = "100m"
-      memory_request = "200Mi"
-      enable_ingress = false
-      #   certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/abcde12345"
-      #   domain          = "signoz.mycompany.com"
+      replica_count       = 1
+      cpu_limit           = "750m"
+      memory_limit        = "1000Mi"
+      cpu_request         = "100m"
+      memory_request      = "200Mi"
+      ingress_enabled     = true
+      aws_certificate_arn = "arn:aws:acm:us-east-1:${data.aws_caller_identity.current.account_id}:certificate/7e4d8c74-46e7-4d99-a523-6db4336d9a0a"
+      root_domain         = "${var.namespace}-${var.environment}.link"
+      domain              = "signoz.${var.namespace}-${var.environment}.link"
     }
 
     alertmanager = {

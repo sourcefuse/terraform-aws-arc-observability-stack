@@ -1,12 +1,12 @@
 variable "name" {
   type        = string
-  description = "(optional) Name of fluent-bit instance"
-  default     = "fluent-bit"
+  description = "(optional) Name of signoz instance"
+  default     = "signoz"
 }
 
 variable "k8s_namespace" {
   type        = string
-  description = "Kubernetes namespace where fluent-bit to be deployed"
+  description = "Kubernetes namespace where signoz to be deployed"
 }
 
 variable "create_k8s_namespace" {
@@ -17,12 +17,13 @@ variable "create_k8s_namespace" {
 
 variable "signoz_config" {
   type = object({
-    name          = string
-    storage_class = optional(string, "gp3")
-    cluster_name  = string
+    name                      = string
+    storage_class             = optional(string, "gp3")
+    cluster_name              = string
+    enable_log_collection     = optional(bool, false)
+    enable_metrics_collection = optional(bool, false)
     clickhouse = optional(object({
       user           = optional(string, "admin")
-      password       = optional(string, "27ff0399-0d3a-4bd8-919d-17c2181e6fb9")
       cpu_limit      = optional(string, "2000m")
       memory_limit   = optional(string, "4Gi")
       cpu_request    = optional(string, "100m")
@@ -31,15 +32,18 @@ variable "signoz_config" {
     }))
 
     signoz_bin = optional(object({
-      replica_count   = optional(number, 1)
-      cpu_limit       = optional(string, "750m")
-      memory_limit    = optional(string, "1000Mi")
-      cpu_request     = optional(string, "100m")
-      memory_request  = optional(string, "200Mi")
-      enable_ingress  = optional(bool, false)
-      certificate_arn = optional(string, null)
-      domain          = optional(string, "signoz.example.com")
-      storage         = optional(string, "1Gi")
+      replica_count              = optional(number, 1)
+      cpu_limit                  = optional(string, "750m")
+      memory_limit               = optional(string, "1000Mi")
+      cpu_request                = optional(string, "100m")
+      memory_request             = optional(string, "200Mi")
+      ingress_enabled            = optional(bool, false)
+      aws_certificate_arn        = optional(string, null)
+      domain                     = string
+      lb_visibility              = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
+      root_domain                = optional(string, null)              // if root domain is provided, it creates DNS record
+      storage                    = optional(string, "1Gi")
+      metric_collection_interval = optional(string, "30s")
     }))
 
     alertmanager = optional(object({
@@ -50,7 +54,7 @@ variable "signoz_config" {
       cpu_request     = optional(string, "100m")
       memory_request  = optional(string, "200Mi")
       storage         = optional(string, "100Mi")
-      enable_ingress  = optional(bool, false)
+      ingress_enabled = optional(bool, false)
       certificate_arn = optional(string, null)
       domain          = optional(string, "signoz.example.com")
     }))
@@ -62,7 +66,7 @@ variable "signoz_config" {
       cpu_request     = optional(string, "100m")
       memory_request  = optional(string, "200Mi")
       storage         = optional(string, "100Mi")
-      enable_ingress  = optional(bool, false)
+      ingress_enabled = optional(bool, false)
       certificate_arn = optional(string, null)
       domain          = optional(string, "signoz.example.com")
     }))

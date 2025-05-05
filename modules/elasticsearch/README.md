@@ -59,7 +59,7 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_host"></a> [host](#output\_host) | Elastic Search host |
-| <a name="output_lb_arn"></a> [lb\_arn](#output\_lb\_arn) | Kibana ingress loadbalancer ARN |
+| <a name="output_lb_dns"></a> [lb\_dns](#output\_lb\_dns) | Kibana ingress loadbalancer DNS |
 | <a name="output_password"></a> [password](#output\_password) | Elastic Search user's password |
 | <a name="output_port"></a> [port](#output\_port) | Elastic Search port |
 | <a name="output_user"></a> [user](#output\_user) | Elastic Search user |

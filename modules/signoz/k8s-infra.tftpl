@@ -1,41 +1,16 @@
 global:
   storageClass: ${storage_class}
-  # -- Kubernetes cluster domain
-  # It is used only when components are installed in different namespace
-  clusterDomain: cluster.local
-  # -- Kubernetes cluster name
-  # It is used to attached to telemetry data via resource detection processor
   clusterName: "${cluster_name}"
-  # -- Deployment environment to be attached to telemetry data
-  deploymentEnvironment: "{environment}"
-  # -- Kubernetes cluster cloud provider along with distribution if any.
-  # example: `aws`, `azure`, `gcp`, `gcp/autogke`, `azure`, and `other`
   cloud: aws
 
-# -- K8s infra chart name override
-nameOverride: ""
-
-# -- K8s infra chart full name override
 fullnameOverride: "${name}"
-
-# -- Whether to enable K8s infra chart
-enabled: true
-# -- Endpoint/IP Address of the SigNoz or any other OpenTelemetry backend.
-# Set it to `ingest.signoz.io:4317` for SigNoz SaaS.
-#
-# If set to null and the chart is installed as dependency, it will attempt
-# to autogenerate the endpoint of SigNoz OtelCollector.
 otelCollectorEndpoint: "http://signoz-monitoring-otel-collector:4317"
-
-
-# -- Which namespace to install k8s-infra components.
-# By default installed to the namespace same as the chart.
-namespace: ""
 
 # -- Presets to easily set up OtelCollector configurations.
 presets:
   loggingExporter:
     enabled: false
+
     # Verbosity of the logging export: basic, normal, detailed
     verbosity: basic
     # Number of messages initially logged each second
@@ -81,7 +56,7 @@ presets:
         type: container
   hostMetrics:
     enabled: true
-    collectionInterval: 30s
+    collectionInterval: ${metric_collection_interval}
     scrapers:
       cpu: {}
       load: {}
@@ -154,7 +129,7 @@ presets:
           match_type: regexp
   kubeletMetrics:
     enabled: true
-    collectionInterval: 30s
+    collectionInterval: ${metric_collection_interval}
     authType: serviceAccount
     endpoint: $${env:K8S_HOST_IP}:10250
     insecureSkipVerify: true
@@ -235,7 +210,7 @@ presets:
     extractAnnotations: []
   clusterMetrics:
     enabled: true
-    collectionInterval: 30s
+    collectionInterval: ${metric_collection_interval}
     resourceAttributes:
       k8s.pod.qos_class:
         enabled: true
@@ -950,20 +925,5 @@ otelDeployment:
           receivers: []
           processors: [batch]
           exporters: []
-
-  # -- Additional volumes for otelDeployment
   extraVolumes: []
-  # - name: config-volume
-  #   configMap:
-  #     name: special-config
-  # - name: secret-volume
-  #   secret:
-  #     secretName: special-secret
-
-  # -- Additional volume mounts for otelDeployment
   extraVolumeMounts: []
-  # - name: config-volume
-  #   mountPath: /etc/config
-  # - name: secret-volume
-  #   mountPath: /etc/secret
-  #   readOnly: true

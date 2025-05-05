@@ -1,4 +1,4 @@
-output "grafana_lb_arn" {
-  description = "Grafana ingress loadbalancer ARN"
-  value       = module.prometheus.grafana_lb_arn
+output "grafana_lb_dns" {
+  description = "Grafana ingress loadbalancer DNS"
+  value       = module.prometheus.grafana_lb_dns
 }

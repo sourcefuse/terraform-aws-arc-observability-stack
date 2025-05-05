@@ -46,5 +46,5 @@
 
 | Name | Description |
 |------|-------------|
-| <a name="output_kibana_lb_arn"></a> [kibana\_lb\_arn](#output\_kibana\_lb\_arn) | Kibana ingress loadbalancer ARN |
+| <a name="output_kibana_lb_arn"></a> [kibana\_lb\_arn](#output\_kibana\_lb\_arn) | Kibana ingress loadbalancer DNS |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -82,7 +82,7 @@ clickhouse:
     # If undefined (the default) or set to `null`, no storageClassName spec is
     # set, choosing the default provisioner.
     #
-    storageClass: null # TODO: ------------------------> analyse
+    storageClass: null
     # -- Access Modes for persistent volume
     accessModes:
       - ReadWriteOnce
@@ -143,20 +143,22 @@ signoz:
 
   ingress:
     # -- Enable ingress for signoz
-    enabled: ${signoz_bin.enable_ingress}
+    enabled: ${signoz_bin.ingress_enabled}
     # -- Ingress Class Name to be used to identify ingress controllers
-    className: ""
+    className: "alb"
     # -- Annotations to signoz Ingress
-    annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-    # cert-manager.io/cluster-issuer: letsencrypt-prod
-    # -- signoz Ingress Host names with their path details
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: ${signoz_bin.lb_visibility}
+      alb.ingress.kubernetes.io/group.order: "40"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/certificate-arn: ${signoz_bin.aws_certificate_arn}
+      alb.ingress.kubernetes.io/healthcheck-path: "/ping"
     hosts:
       - host: ${signoz_bin.domain}
         paths:
           - path: /
-            pathType: ImplementationSpecific
+            pathType: Prefix
             port: 8080
     # -- signoz Ingress TLS
     tls: []
@@ -168,6 +170,7 @@ signoz:
   # Ref: http://kubernetes.io/docs/user-guide/compute-resources/
   #
   # @default -- See `values.yaml` for defaults
+
   resources:
     requests:
       cpu: ${signoz_bin.cpu_request}
@@ -213,7 +216,7 @@ alertmanager:
       port: http
   ingress:
     # -- Enable ingress for Alertmanager
-    enabled: ${alertmanager.enable_ingress}
+    enabled: ${alertmanager.ingress_enabled}
     # -- Ingress Class Name to be used to identify ingress controllers
     className: ""
     # -- Annotations to Alertmanager Ingress
@@ -265,7 +268,7 @@ otelCollector:
     pullPolicy: IfNotPresent
   replicaCount: ${otel_collector.replica_count}
   ingress:
-    enabled: ${otel_collector.enable_ingress}
+    enabled: ${otel_collector.ingress_enabled}
     className: ""
     # -- Annotations to OtelCollector Ingress
     annotations: {}
