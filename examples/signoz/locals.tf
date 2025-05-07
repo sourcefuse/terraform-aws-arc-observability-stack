@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 
 locals {
   signoz_config = {
-    name          = "signoz-monitoring"
+    name          = "signoz"
     storage_class = "gp3"
     cluster_name  = data.aws_eks_cluster.this.name
 
@@ -50,5 +50,22 @@ locals {
       memory_request = "300Mi"
       storage        = "200Mi"
     }
+  }
+
+
+  metrics_logs_config = {
+    name          = "signoz"
+    storage_class = "gp3"
+    cluster_name  = data.aws_eks_cluster.this.name
+
+    k8s_namespace = {
+      name   = "signoz"
+      create = false
+    }
+    enable_log_collection      = true
+    enable_metrics_collection  = true
+    otel_collector_endpoint    = module.signoz.otel_collector_endpoint
+    metric_collection_interval = "30s"
+
   }
 }

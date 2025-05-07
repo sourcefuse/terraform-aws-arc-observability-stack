@@ -4,12 +4,12 @@ global:
   cloud: aws
 
 fullnameOverride: "${name}"
-otelCollectorEndpoint: "http://signoz-monitoring-otel-collector:4317"
+otelCollectorEndpoint: "${otel_collector_endpoint}"
 
 # -- Presets to easily set up OtelCollector configurations.
 presets:
   loggingExporter:
-    enabled: false
+    enabled: ${enable_log_collection}
 
     # Verbosity of the logging export: basic, normal, detailed
     verbosity: basic
@@ -20,7 +20,7 @@ presets:
   otlpExporter:
     enabled: true
   logsCollection:
-    enabled: true
+    enabled: ${enable_log_collection}
     startAt: end
     includeFilePath: true
     includeFileName: false
@@ -55,7 +55,7 @@ presets:
       - id: container-parser
         type: container
   hostMetrics:
-    enabled: true
+    enabled: ${enable_metrics_collection}
     collectionInterval: ${metric_collection_interval}
     scrapers:
       cpu: {}
@@ -128,7 +128,7 @@ presets:
             - ^lo$
           match_type: regexp
   kubeletMetrics:
-    enabled: true
+    enabled: ${enable_metrics_collection}
     collectionInterval: ${metric_collection_interval}
     authType: serviceAccount
     endpoint: $${env:K8S_HOST_IP}:10250

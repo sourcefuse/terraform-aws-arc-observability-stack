@@ -23,6 +23,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_logs_metrics"></a> [logs\_metrics](#module\_logs\_metrics) | ../../ | n/a |
 | <a name="module_signoz"></a> [signoz](#module\_signoz) | ../../ | n/a |
 
 ## Resources
@@ -45,5 +46,6 @@
 
 | Name | Description |
 |------|-------------|
+| <a name="output_otel_collector_endpoint"></a> [otel\_collector\_endpoint](#output\_otel\_collector\_endpoint) | OTEL collector endpoint |
 | <a name="output_signoz_lb_arn"></a> [signoz\_lb\_arn](#output\_signoz\_lb\_arn) | Signoz ingress loadbalancer DNS |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

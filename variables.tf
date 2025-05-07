@@ -19,8 +19,8 @@ variable "search_engine" {
   description = "(optional) Search engine for logs"
   default     = null // elasticsearch
   validation {
-    condition     = var.search_engine == null ? true : contains(["elasticsearch", "opensearch", "signoz", null], var.search_engine)
-    error_message = "Invalid value for search_engine. Allowed values are 'elasticsearch' , 'opensearch' , 'signoz' and null . null - To disable installing Elasticsearch"
+    condition     = var.search_engine == null ? true : contains(["elasticsearch", "opensearch", "signoz-clickhouse", null], var.search_engine)
+    error_message = "Invalid value for search_engine. Allowed values are 'elasticsearch' , 'opensearch' , 'signoz-clickhouse' and null . null - To disable installing Elasticsearch"
   }
 }
 
@@ -316,7 +316,7 @@ variable "signoz_config" {
       name   = optional(string, "signoz")
       create = optional(bool, false)
     })
-    name          = string
+    name          = optional(string, "signoz")
     storage_class = optional(string, "gp3")
     cluster_name  = string
     clickhouse = optional(object({
@@ -329,17 +329,16 @@ variable "signoz_config" {
     }))
 
     signoz_bin = optional(object({
-      replica_count              = optional(number, 1)
-      cpu_limit                  = optional(string, "750m")
-      memory_limit               = optional(string, "1000Mi")
-      cpu_request                = optional(string, "100m")
-      memory_request             = optional(string, "200Mi")
-      ingress_enabled            = optional(bool, false)
-      aws_certificate_arn        = optional(string, null)
-      domain                     = string
-      root_domain                = optional(string, null)              // if root domain is provided, it creates DNS record
-      lb_visibility              = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
-      metric_collection_interval = optional(string, "30s")
+      replica_count       = optional(number, 1)
+      cpu_limit           = optional(string, "750m")
+      memory_limit        = optional(string, "1000Mi")
+      cpu_request         = optional(string, "100m")
+      memory_request      = optional(string, "200Mi")
+      ingress_enabled     = optional(bool, false)
+      aws_certificate_arn = optional(string, null)
+      domain              = string
+      root_domain         = optional(string, null)              // if root domain is provided, it creates DNS record
+      lb_visibility       = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
     }))
 
     alertmanager = optional(object({
@@ -396,6 +395,41 @@ variable "signoz_config" {
       name   = "signoz"
       create = true
     }
+    name         = null
+    cluster_name = null
+  }
+}
+
+variable "signoz_infra_monitor_config" {
+  type = object({
+    k8s_namespace = optional(object({
+      name   = optional(string, "signoz")
+      create = optional(bool, false)
+    }))
+    name                       = string
+    storage_class              = optional(string, "gp3")
+    cluster_name               = string
+    enable_log_collection      = optional(bool, false)
+    enable_metrics_collection  = optional(bool, false)
+    otel_collector_endpoint    = optional(string, null)
+    metric_collection_interval = optional(string, "30s")
+  })
+
+  description = <<-EOT
+Configuration object for deploying SigNoz infrastructure monitoring components.
+
+Attributes:
+- name: A name identifier for the monitoring deployment (used in naming resources).
+- storage_class: (Optional) The Kubernetes storage class to be used for persistent volumes. Defaults to "gp3".
+- cluster_name: The name of the Kubernetes cluster where SigNoz is being deployed.
+- otel_collector_endpoint: The endpoint URL for the OpenTelemetry Collector to which metrics, logs, and traces will be exported.
+- metric_collection_interval: (Optional) The interval at which metrics are collected. Defaults to "30s".
+- if any one ofr the values enable_log_collection,enable_metrics_collection is true, then helm chart gets installed
+
+This variable is used to centralize configuration related to monitoring infrastructure via SigNoz.
+EOT
+
+  default = {
     name         = null
     cluster_name = null
   }

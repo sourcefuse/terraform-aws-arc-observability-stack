@@ -5,15 +5,12 @@ clusterName: "{cluster_name}"
 
 clickhouse:
   enabled: true
-  namespace: ""
-  nameOverride: ""
-  fullnameOverride: ""
   cluster: cluster
   database: signoz_metrics
   traceDatabase: signoz_traces
   logDatabase: signoz_logs
-  user: ${clickhouse.user}
-  password: ${password}
+  user: admin
+  password: "${password}"
   image:
     registry: docker.io
     repository: clickhouse/clickhouse-server
@@ -28,31 +25,15 @@ clickhouse:
   service:
     annotations: {}
     type: ClusterIP
-    # -- Clickhouse HTTP port
     httpPort: 8123
-    # -- Clickhouse TCP port
     tcpPort: 9000
-  # -- Whether to use TLS connection connecting to ClickHouse
   secure: false
-  # -- Whether to verify TLS certificate on connection to ClickHouse
   verify: false
-  # -- URL for zookeeper.
-  externalZookeeper: {}
-  # servers:
-  # - host: signoz-signoz-zookeeper
-  #   port: 2181
-
-  # -- Node selector for settings for clickhouse pod
   nodeSelector: {}
   # -- Toleration labels for clickhouse pod assignment
   tolerations: []
   # -- Affinity settings for clickhouse pod
   affinity: {}
-  # -- Configure resource requests and limits. Update according to your own use
-  # case as these values might not be suitable for your workload.
-  # Ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  #
-  # @default -- See `values.yaml` for defaults
   resources:
     requests:
       cpu: ${clickhouse.cpu_request}
@@ -116,18 +97,17 @@ clickhouse:
   defaultSettings:
     format_schema_path: /etc/clickhouse-server/config.d/
     user_scripts_path: /var/lib/clickhouse/user_scripts/
-    user_defined_executable_functions_config: '/etc/clickhouse-server/functions/custom-functions.xml'
+    user_defined_executable_functions_config: "/etc/clickhouse-server/functions/custom-functions.xml"
   # -- ClickHouse pod(s) annotation.
   podAnnotations:
-    signoz.io/scrape: 'true'
-    signoz.io/port: '9363'
+    signoz.io/scrape: "true"
+    signoz.io/port: "9363"
     signoz.io/path: /metrics
   installCustomStorageClass: true
 
-
 signoz:
   name: "signoz"
-  replicaCount: 1
+  replicaCount: ${signoz_bin.replica_count}
   image:
     registry: docker.io
     repository: signoz/signoz
@@ -184,8 +164,6 @@ signoz:
     accessModes:
       - ReadWriteOnce
     size: ${signoz_bin.storage}
-
-
 
 alertmanager:
   enabled: ${alertmanager.enable}
@@ -257,7 +235,6 @@ alertmanager:
       - ReadWriteOnce
     # -- Persistent Volume size
     size: ${alertmanager.storage}
-
 
 otelCollector:
   name: "otel-collector"
@@ -407,7 +384,26 @@ otelCollector:
       # memory_limiter: null
       signozspanmetrics/delta:
         metrics_exporter: clickhousemetricswrite
-        latency_histogram_buckets: [100us, 1ms, 2ms, 6ms, 10ms, 50ms, 100ms, 250ms, 500ms, 1000ms, 1400ms, 2000ms, 5s, 10s, 20s, 40s, 60s]
+        latency_histogram_buckets:
+          [
+            100us,
+            1ms,
+            2ms,
+            6ms,
+            10ms,
+            50ms,
+            100ms,
+            250ms,
+            500ms,
+            1000ms,
+            1400ms,
+            2000ms,
+            5s,
+            10s,
+            20s,
+            40s,
+            60s,
+          ]
         dimensions_cache_size: 100000
         dimensions:
           - name: service.namespace

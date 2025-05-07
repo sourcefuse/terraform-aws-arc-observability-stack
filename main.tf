@@ -131,21 +131,35 @@ module "jaeger" {
 
 }
 
+// Deploy Signoz stack with Clickhouse , OTEL collector etc
 module "signoz" {
   source = "./modules/signoz"
 
   count = (
-    var.search_engine == "signoz" ||
-    var.log_aggregator == "signoz" ||
-    var.metrics_monitoring_system == "signoz" ||
-    var.tracing_stack == "signoz"
+    var.search_engine == "signoz-clickhouse"
   ) ? 1 : 0
 
 
   k8s_namespace        = var.signoz_config.k8s_namespace.name
   create_k8s_namespace = var.signoz_config.k8s_namespace.create
-  environment          = var.environment
 
   signoz_config = var.signoz_config
+}
 
+// Deploy metrics and log collection agents
+module "signoz_metrics_logs" {
+  source = "./modules/signoz-infra"
+
+  count = (
+    var.log_aggregator == "signoz" ||
+    var.metrics_monitoring_system == "signoz"
+  ) ? 1 : 0
+
+
+  k8s_namespace           = var.signoz_infra_monitor_config.k8s_namespace.name
+  create_k8s_namespace    = var.signoz_infra_monitor_config.k8s_namespace.create
+  environment             = var.environment
+  otel_collector_endpoint = var.signoz_config.cluster_name != null && var.signoz_infra_monitor_config.otel_collector_endpoint == null ? "http://${var.signoz_config.name}-otel-collector:4317" : var.signoz_infra_monitor_config.otel_collector_endpoint
+
+  signoz_infra_monitor_config = var.signoz_infra_monitor_config
 }

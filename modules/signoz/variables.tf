@@ -17,11 +17,10 @@ variable "create_k8s_namespace" {
 
 variable "signoz_config" {
   type = object({
-    name                      = string
-    storage_class             = optional(string, "gp3")
-    cluster_name              = string
-    enable_log_collection     = optional(bool, false)
-    enable_metrics_collection = optional(bool, false)
+    install       = optional(bool, true)
+    name          = optional(string, "signoz")
+    storage_class = optional(string, "gp3")
+    cluster_name  = string
     clickhouse = optional(object({
       user           = optional(string, "admin")
       cpu_limit      = optional(string, "2000m")
@@ -32,18 +31,17 @@ variable "signoz_config" {
     }))
 
     signoz_bin = optional(object({
-      replica_count              = optional(number, 1)
-      cpu_limit                  = optional(string, "750m")
-      memory_limit               = optional(string, "1000Mi")
-      cpu_request                = optional(string, "100m")
-      memory_request             = optional(string, "200Mi")
-      ingress_enabled            = optional(bool, false)
-      aws_certificate_arn        = optional(string, null)
-      domain                     = string
-      lb_visibility              = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
-      root_domain                = optional(string, null)              // if root domain is provided, it creates DNS record
-      storage                    = optional(string, "1Gi")
-      metric_collection_interval = optional(string, "30s")
+      replica_count       = optional(number, 1)
+      cpu_limit           = optional(string, "750m")
+      memory_limit        = optional(string, "1000Mi")
+      cpu_request         = optional(string, "100m")
+      memory_request      = optional(string, "200Mi")
+      ingress_enabled     = optional(bool, false)
+      aws_certificate_arn = optional(string, null)
+      domain              = string
+      lb_visibility       = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
+      root_domain         = optional(string, null)              // if root domain is provided, it creates DNS record
+      storage             = optional(string, "1Gi")
     }))
 
     alertmanager = optional(object({
@@ -96,9 +94,10 @@ variable "signoz_config" {
   This structure enables centralized management of observability stack deployment in Kubernetes
   via Terraform.
   EOT
-}
 
-variable "environment" {
-  type        = string
-  description = "Environment name"
+  default = {
+    install      = false
+    name         = null
+    cluster_name = null
+  }
 }
