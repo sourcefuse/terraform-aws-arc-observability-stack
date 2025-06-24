@@ -33,7 +33,7 @@ terraform {
 }
 
 data "aws_eks_cluster" "this" {
-  name = "${var.namespace}-${var.environment}-cluster"
+  name = "arc-poc-cluster"
 }
 
 data "aws_eks_cluster_auth" "this" {
