@@ -18,9 +18,9 @@ resource "helm_release" "signoz" {
   namespace  = var.k8s_namespace
   repository = "https://charts.signoz.io"
   chart      = "signoz"
-  version    = "0.78.0"
+  version    = var.signoz_config.chart_version
 
-  values = [
+  values = length(var.signoz_config.chart_values) == 0 ? [
     templatefile("${path.module}/signoz.tftpl", {
       name           = var.signoz_config.name
       storage_class  = var.signoz_config.storage_class
@@ -31,7 +31,7 @@ resource "helm_release" "signoz" {
       signoz_bin     = var.signoz_config.signoz_bin
       alertmanager   = var.signoz_config.alertmanager
     })
-  ]
+  ] : var.signoz_config.chart_values
 
   force_update = true
   depends_on   = [kubernetes_namespace.this, random_password.clickhouse]

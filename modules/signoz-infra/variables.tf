@@ -23,6 +23,8 @@ variable "environment" {
 variable "signoz_infra_monitor_config" {
   type = object({
     name                       = string
+    chart_version              = optional(string, "0.12.1")
+    chart_values               = optional(list(string), [])
     storage_class              = optional(string, "gp3")
     cluster_name               = string
     enable_log_collection      = optional(bool, false)

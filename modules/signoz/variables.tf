@@ -21,6 +21,8 @@ variable "signoz_config" {
     name          = optional(string, "signoz")
     storage_class = optional(string, "gp3")
     cluster_name  = string
+    chart_version = optional(string, "0.78.0")
+    chart_values  = optional(list(string), [])
     clickhouse = optional(object({
       user           = optional(string, "admin")
       cpu_limit      = optional(string, "2000m")
@@ -38,7 +40,7 @@ variable "signoz_config" {
       memory_request      = optional(string, "200Mi")
       ingress_enabled     = optional(bool, false)
       aws_certificate_arn = optional(string, null)
-      domain              = string
+      domain              = optional(string, null)
       lb_visibility       = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
       root_domain         = optional(string, null)              // if root domain is provided, it creates DNS record
       storage             = optional(string, "1Gi")
