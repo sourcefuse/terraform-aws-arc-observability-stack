@@ -1,0 +1,10 @@
+serviceAccount:
+  name: ${service_account_name}
+  annotations:
+    eks.amazonaws.com/role-arn: ${iam_role_arn}
+
+pod:
+  # allow auto-scraping from prometheus-server
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9106" # must match the `service.port`
