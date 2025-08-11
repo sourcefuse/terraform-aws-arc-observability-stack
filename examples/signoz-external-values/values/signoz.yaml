@@ -1,0 +1,282 @@
+global:
+  storageClass: gp3
+
+clickhouse:
+  enabled: true
+  installCustomStorageClass: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  persistence:
+    # clickhouse.persistence.enabled -- Enable data persistence using a PVC for ClickHouse data.
+    # @default -- true
+    enabled: true
+    # clickhouse.persistence.existingClaim -- Use a manually managed Persistent Volume Claim. If defined, the PVC must be created manually.
+    # @default -- ""
+    existingClaim: ""
+    # clickhouse.persistence.storageClass -- Persistent Volume Storage Class. If "-", disables dynamic provisioning. If null, uses the default provisioner.
+    # @default -- null
+    storageClass: null
+    # clickhouse.persistence.accessModes -- Access Modes for the persistent volume.
+    # @default -- ["ReadWriteOnce"]
+    accessModes:
+      - ReadWriteOnce
+    # clickhouse.persistence.size -- Persistent Volume size.
+    # @default -- "20Gi"
+    size: 20Gi
+  layout:
+    shardsCount: 1
+    replicasCount: 2
+
+signoz:
+  name: "signoz"
+  replicaCount: ${signoz_bin.replica_count}
+  image:
+    registry: docker.io
+    repository: signoz/signoz
+    tag: v0.91.0
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: ${signoz_bin.cpu_request}
+      memory: ${signoz_bin.memory_request}
+    limits:
+      cpu: ${signoz_bin.cpu_limit}
+      memory: ${signoz_bin.memory_limit}
+  priorityClassName: ""
+  # -- Node selector for settings for signoz pod
+  nodeSelector: {}
+  # -- Toleration labels for signoz pod assignment
+  tolerations: []
+  # -- Affinity settings for signoz pod
+  affinity: {}
+  # -- TopologySpreadConstraints describes how g pods ought to spread
+  topologySpreadConstraints: []
+  persistence:
+    # -- Enable data persistence using PVC for SQLiteDB data.
+    enabled: true
+    # -- Name of an existing PVC to use (only when deploying a single replica)
+    existingClaim: ""
+    # -- Persistent Volume Storage Class to use.
+    # If defined, `storageClassName: <storageClass>`.
+    # If set to "-", `storageClassName: ""`, which disables dynamic provisioning
+    # If undefined (the default) or set to `null`, no storageClassName spec is
+    # set, choosing the default provisioner.
+    #
+    storageClass: null
+    # -- Access Modes for persistent volume
+    accessModes:
+      - ReadWriteOnce
+    # -- Persistent Volume size
+    size: 1Gi
+  ingress:
+    # -- Enable ingress for signoz
+    enabled: ${signoz_bin.ingress_enabled}
+    # -- Ingress Class Name to be used to identify ingress controllers
+    className: "alb"
+    # -- Annotations to signoz Ingress
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: ${signoz_bin.lb_visibility}
+      alb.ingress.kubernetes.io/group.order: "1"
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/certificate-arn: ${signoz_bin.aws_certificate_arn}
+      alb.ingress.kubernetes.io/healthcheck-path: "/ping"
+    hosts:
+      - host: ${signoz_bin.domain}
+        paths:
+          - path: /
+            pathType: Prefix
+            port: 8080
+
+
+otelCollector:
+  name: "otel-collector"
+  image:
+    registry: docker.io
+    repository: signoz/signoz-otel-collector
+    tag: v0.128.2
+    pullPolicy: IfNotPresent
+    name: /signoz-otel-collector
+    # -- OtelCollector command extra arguments
+    extraArgs:
+      - --feature-gates=-pkg.translator.prometheus.NormalizeName
+  serviceAccount:
+    # otelCollector.serviceAccount.create -- Specifies whether a service account should be created.
+    # @default -- true
+    create: true
+    # otelCollector.serviceAccount.annotations -- Annotations to add to the service account.
+    # @default -- {}
+    annotations: {}
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: "2"
+      memory: 3Gi
+
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+            max_recv_msg_size_mib: 16
+          http:
+            endpoint: 0.0.0.0:4318
+      httpcheck:
+        targets:
+          %{~ for ep in endpoints ~}
+          - endpoint: ${ep.endpoint}
+            method: ${ep.method}
+          %{~ endfor ~}
+        collection_interval: 60s
+      # mysql:
+      #   # The hostname and port of the MySQL instance, separated by a colon.
+      #   endpoint: rf-qa-db-cluster-1.cluster-cle8sm06kqiv.us-west-2.rds.amazonaws.com
+      #   # The username used to access the MySQL instance.
+      #   username: appuser
+      #   # The password used to access the MySQL instance.
+      #   password: ziqfORZMkyJxA5Cy
+      #   # The frequency at which to collect metrics from the Redis instance.
+      #   collection_interval: 60s
+      #   # Additional configuration for query to build mysql.statement_events.count and mysql.statement_events.wait.time metrics
+      #   statement_events:
+      #     digest_text_limit: 120
+      #     time_limit: 24h
+      #     limit: 250
+      #   # tls:
+      #   #   insecure: false
+      #   #   ca_file: /etc/ssl/certs/ca-certificates.crt
+      #   #   cert_file: /etc/ssl/certs/redis.crt
+      #   #   key_file: /etc/ssl/certs/redis.key
+      #   metrics:
+      #     mysql.client.network.io:
+      #       enabled: true
+      #     mysql.commands:
+      #       enabled: true
+      #     mysql.connection.count:
+      #       enabled: true
+      #     mysql.connection.errors:
+      #       enabled: true
+      #     mysql.joins:
+      #       enabled: true
+      #     mysql.query.count:
+      #       enabled: true
+      #     mysql.query.slow.count:
+      #       enabled: true
+      #     mysql.replica.sql_delay:
+      #       enabled: true
+      #     mysql.replica.time_behind_source:
+      #       enabled: true
+      # awscloudwatchmetrics:
+      #   region: us-east-1
+      #   poll_interval: 5m
+      #   metrics:
+      #     named:
+      #       - namespace: "AWS/RDS"
+      #         metric_name: "FreeableMemory"
+      #         period: "5m"
+      #         aws_aggregation: "Sum"
+      #         dimensions:
+      #           - Name: "DBClusterIdentifier"
+      #             Value: "rf-dev-db-cluster-1"
+
+      # Collecting cloudwatch metrics
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: 'aws-cloudwatch-metrics'
+              scrape_timeout: 120s
+              scrape_interval: 300s
+              static_configs:
+                - targets: ['prometheus-cloudwatch-exporter:9106']
+      jaeger:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:14250
+          thrift_http:
+            endpoint: 0.0.0.0:14268
+      httplogreceiver/heroku:
+        endpoint: 0.0.0.0:8081
+        source: heroku
+      httplogreceiver/json:
+        endpoint: 0.0.0.0:8082
+        source: json
+    processors:
+      batch:
+        send_batch_size: 50000
+        timeout: 1s
+      # Memory Limiter processor. If not set, it will be overridden with values based on k8s resource limits.
+      # ref: https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/memorylimiterprocessor/README.md
+      # memory_limiter: null
+      signozspanmetrics/delta:
+        metrics_exporter: signozclickhousemetrics
+        latency_histogram_buckets: [100us, 1ms, 2ms, 6ms, 10ms, 50ms, 100ms, 250ms, 500ms, 1000ms, 1400ms, 2000ms, 5s, 10s, 20s, 40s, 60s]
+        dimensions_cache_size: 100000
+        dimensions:
+          - name: service.namespace
+            default: default
+          - name: deployment.environment
+            default: default
+          - name: signoz.collector.id
+        aggregation_temporality: AGGREGATION_TEMPORALITY_DELTA
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+      zpages:
+        endpoint: localhost:55679
+      pprof:
+        endpoint: localhost:1777
+    exporters:
+      clickhousetraces:
+        datasource: tcp://$${env:CLICKHOUSE_USER}:$${env:CLICKHOUSE_PASSWORD}@$${env:CLICKHOUSE_HOST}:$${env:CLICKHOUSE_PORT}/$${env:CLICKHOUSE_TRACE_DATABASE}
+        low_cardinal_exception_grouping: $${env:LOW_CARDINAL_EXCEPTION_GROUPING}
+        use_new_schema: true
+      signozclickhousemetrics:
+        dsn: tcp://$${env:CLICKHOUSE_USER}:$${env:CLICKHOUSE_PASSWORD}@$${env:CLICKHOUSE_HOST}:$${env:CLICKHOUSE_PORT}/$${env:CLICKHOUSE_DATABASE}
+        timeout: 45s
+      clickhouselogsexporter:
+        dsn: tcp://$${env:CLICKHOUSE_USER}:$${env:CLICKHOUSE_PASSWORD}@$${env:CLICKHOUSE_HOST}:$${env:CLICKHOUSE_PORT}/$${env:CLICKHOUSE_LOG_DATABASE}
+        timeout: 10s
+        use_new_schema: true
+      metadataexporter:
+        dsn: tcp://$${env:CLICKHOUSE_USER}:$${env:CLICKHOUSE_PASSWORD}@$${env:CLICKHOUSE_HOST}:$${env:CLICKHOUSE_PORT}/signoz_metadata
+        timeout: 10s
+        tenant_id: $${env:TENANT_ID}
+        cache:
+          provider: in_memory
+      debug:
+        verbosity: detailed
+      otlp/local:
+        endpoint: "signoz-otel-collector:4317"
+        tls:
+          insecure: true
+    service:
+      telemetry:
+        logs:
+          encoding: json
+      extensions: [health_check, zpages, pprof]
+      pipelines:
+        traces:
+          receivers: [otlp, jaeger]
+          processors: [signozspanmetrics/delta, batch]
+          exporters: [clickhousetraces, metadataexporter]
+        metrics:
+          receivers: [otlp, httpcheck]
+          processors: [batch]
+          exporters: [metadataexporter, signozclickhousemetrics]
+        logs:
+          receivers: [otlp, httplogreceiver/heroku, httplogreceiver/json]
+          processors: [batch]
+          exporters: [clickhouselogsexporter, metadataexporter]
+        metrics/mysql:
+          receivers: [prometheus]
+          processors: []
+          exporters: [otlp/local,debug]

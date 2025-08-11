@@ -10,9 +10,9 @@ resource "helm_release" "k8s_infra" {
   namespace  = var.k8s_namespace
   repository = "https://charts.signoz.io"
   chart      = "k8s-infra"
-  version    = "0.12.1"
+  version    = var.signoz_infra_monitor_config.chart_version
 
-  values = [
+  values = length(var.signoz_infra_monitor_config.chart_values) == 0 ? [
     templatefile("${path.module}/k8s-infra.tftpl", {
       name                       = var.signoz_infra_monitor_config.name
       otel_collector_endpoint    = var.otel_collector_endpoint
@@ -23,7 +23,7 @@ resource "helm_release" "k8s_infra" {
       enable_log_collection      = var.signoz_infra_monitor_config.enable_log_collection
       enable_metrics_collection  = var.signoz_infra_monitor_config.enable_metrics_collection
     })
-  ]
+  ] : var.signoz_infra_monitor_config.chart_values
 
   force_update = true
   depends_on   = [kubernetes_namespace.this]

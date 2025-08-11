@@ -1,5 +1,3 @@
-# terraform-aws-module-template example
-
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -17,7 +15,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.94.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
 
 ## Modules
 
@@ -25,6 +23,7 @@
 |------|--------|---------|
 | <a name="module_logs_metrics"></a> [logs\_metrics](#module\_logs\_metrics) | ../../ | n/a |
 | <a name="module_signoz"></a> [signoz](#module\_signoz) | ../../ | n/a |
+| <a name="module_tags"></a> [tags](#module\_tags) | sourcefuse/arc-tags/aws | 1.2.3 |
 
 ## Resources
 
@@ -40,8 +39,7 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment name | `string` | `"poc"` | no |
-| <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace for the resources. | `string` | `"arc"` | no |
-| <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"us-east-1"` | no |
+| <a name="input_namespace"></a> [namespace](#input\_namespace) | namespace for the prject | `string` | `"arc"` | no |
 
 ## Outputs
 

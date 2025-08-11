@@ -1,4 +1,18 @@
-data "aws_caller_identity" "current" {}
+data "aws_ssm_parameter" "domain" {
+  name            = "/iac/route53/domain"
+  with_decryption = true
+}
+
+locals {
+  domain = data.aws_ssm_parameter.domain.value
+}
+
+
+data "aws_acm_certificate" "this" {
+  domain      = "*.${local.domain}"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
 
 locals {
   signoz_config = {
@@ -28,9 +42,9 @@ locals {
       cpu_request         = "100m"
       memory_request      = "200Mi"
       ingress_enabled     = true
-      aws_certificate_arn = "arn:aws:acm:us-east-1:${data.aws_caller_identity.current.account_id}:certificate/7e4d8c74-46e7-4d99-a523-6db4336d9a0a"
-      root_domain         = "${var.namespace}-${var.environment}.link"
-      domain              = "signoz.${var.namespace}-${var.environment}.link"
+      aws_certificate_arn = data.aws_acm_certificate.this.arn
+      root_domain         = local.domain
+      domain              = "signoz.${local.domain}"
     }
 
     alertmanager = {

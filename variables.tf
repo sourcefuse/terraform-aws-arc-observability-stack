@@ -318,6 +318,8 @@ variable "signoz_config" {
     })
     name          = optional(string, "signoz")
     storage_class = optional(string, "gp3")
+    chart_version = optional(string, "0.78.0")
+    chart_values  = optional(list(string), [])
     cluster_name  = string
     clickhouse = optional(object({
       user           = optional(string, "admin")
@@ -408,6 +410,8 @@ variable "signoz_infra_monitor_config" {
     }))
     name                       = string
     storage_class              = optional(string, "gp3")
+    chart_version              = optional(string, "0.12.1")
+    chart_values               = optional(list(string), [])
     cluster_name               = string
     enable_log_collection      = optional(bool, false)
     enable_metrics_collection  = optional(bool, false)
