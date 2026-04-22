@@ -19,12 +19,12 @@ locals {
     name          = "signoz"
     storage_class = "gp3"
     cluster_name  = data.aws_eks_cluster.this.name
+    chart_version = "0.118.0"
 
     k8s_namespace = {
       name   = "signoz"
       create = true
     }
-
 
     clickhouse = {
       user           = "admin"
@@ -41,6 +41,7 @@ locals {
       memory_limit        = "1000Mi"
       cpu_request         = "100m"
       memory_request      = "200Mi"
+      storage             = "1Gi"
       ingress_enabled     = true
       aws_certificate_arn = data.aws_acm_certificate.this.arn
       root_domain         = local.domain

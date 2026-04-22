@@ -21,7 +21,7 @@ variable "signoz_config" {
     name          = optional(string, "signoz")
     storage_class = optional(string, "gp3")
     cluster_name  = string
-    chart_version = optional(string, "0.78.0")
+    chart_version = optional(string, "0.118.0")
     chart_values  = optional(list(string), [])
     clickhouse = optional(object({
       user           = optional(string, "admin")
@@ -44,6 +44,7 @@ variable "signoz_config" {
       lb_visibility       = optional(string, "internet-facing") # Options: "internal" or "internet-facing"
       root_domain         = optional(string, null)              // if root domain is provided, it creates DNS record
       storage             = optional(string, "1Gi")
+      alb_hostname        = optional(string, null) // if provided, skips ingress lookup and uses this hostname directly
     }))
 
     alertmanager = optional(object({
