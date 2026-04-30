@@ -318,7 +318,7 @@ variable "signoz_config" {
     })
     name          = optional(string, "signoz")
     storage_class = optional(string, "gp3")
-    chart_version = optional(string, "0.78.0")
+    chart_version = optional(string, "0.118.0")
     chart_values  = optional(list(string), [])
     cluster_name  = string
     clickhouse = optional(object({

@@ -1,25 +1,21 @@
 global:
   storageClass: ${storage_class}
+  clusterName: "${cluster_name}"
+
 fullnameOverride: "${name}"
-clusterName: "{cluster_name}"
+
 clickhouse:
   enabled: true
-  fullnameOverride: ""
-  cluster: cluster
-  database: signoz_metrics
-  traceDatabase: signoz_traces
-  logDatabase: signoz_logs
-  user: admin
-  password: 27ff0399-0d3a-4bd8-919d-17c2181e6fb9
+  user: ${clickhouse.user}
+  password: ${password}
   image:
     registry: docker.io
     repository: clickhouse/clickhouse-server
-    tag: 24.1.2-alpine
+    tag: "25.5.6"
     pullPolicy: IfNotPresent
   serviceAccount:
     create: true
     annotations: {}
-    name:
   secure: false
   verify: false
   resources:
@@ -29,7 +25,6 @@ clickhouse:
     limits:
       cpu: ${clickhouse.cpu_limit}
       memory: ${clickhouse.memory_limit}
-
   securityContext:
     enabled: true
     runAsUser: 101
@@ -39,17 +34,18 @@ clickhouse:
   persistence:
     enabled: true
     existingClaim: ""
-    storageClass: null
+    storageClass: ${storage_class}
     accessModes:
       - ReadWriteOnce
     size: ${clickhouse.storage}
+
 signoz:
   name: "signoz"
   replicaCount: ${signoz_bin.replica_count}
   image:
     registry: docker.io
     repository: signoz/signoz
-    tag: v0.87.0
+    tag: "v0.118.0"
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -58,62 +54,37 @@ signoz:
     limits:
       cpu: ${signoz_bin.cpu_limit}
       memory: ${signoz_bin.memory_limit}
-  priorityClassName: ""
-  # -- Node selector for settings for signoz pod
-  nodeSelector: {}
-  # -- Toleration labels for signoz pod assignment
-  tolerations: []
-  # -- Affinity settings for signoz pod
-  affinity: {}
-  # -- TopologySpreadConstraints describes how g pods ought to spread
-  topologySpreadConstraints: []
   persistence:
-    # -- Enable data persistence using PVC for SQLiteDB data.
     enabled: true
-    # -- Name of an existing PVC to use (only when deploying a single replica)
     existingClaim: ""
-    # -- Persistent Volume Storage Class to use.
-    # If defined, `storageClassName: <storageClass>`.
-    # If set to "-", `storageClassName: ""`, which disables dynamic provisioning
-    # If undefined (the default) or set to `null`, no storageClassName spec is
-    # set, choosing the default provisioner.
-    #
-    storageClass: null
-    # -- Access Modes for persistent volume
+    storageClass: ${storage_class}
     accessModes:
       - ReadWriteOnce
-    # -- Persistent Volume size
-    size: 1Gi
+    size: ${signoz_bin.storage}
   ingress:
-    # -- Enable ingress for signoz
     enabled: ${signoz_bin.ingress_enabled}
-    # -- Ingress Class Name to be used to identify ingress controllers
     className: "alb"
-    # -- Annotations to signoz Ingress
     annotations:
       kubernetes.io/ingress.class: alb
       alb.ingress.kubernetes.io/scheme: ${signoz_bin.lb_visibility}
       alb.ingress.kubernetes.io/group.order: "1"
       alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
       alb.ingress.kubernetes.io/certificate-arn: ${signoz_bin.aws_certificate_arn}
-      alb.ingress.kubernetes.io/healthcheck-path: "/ping"
+      alb.ingress.kubernetes.io/healthcheck-path: "/api/v1/health"
     hosts:
       - host: ${signoz_bin.domain}
         paths:
           - path: /
             pathType: Prefix
             port: 8080
+
 otelCollector:
   name: "otel-collector"
   image:
     registry: docker.io
     repository: signoz/signoz-otel-collector
-    tag: v0.111.42
+    tag: "v0.144.2"
     pullPolicy: IfNotPresent
-    name: /signoz-otel-collector
-    # -- OtelCollector command extra arguments
-    extraArgs:
-      - --feature-gates=-pkg.translator.prometheus.NormalizeName
   resources:
     requests:
       cpu: ${otel_collector.cpu_request}
@@ -122,41 +93,21 @@ otelCollector:
       cpu: ${otel_collector.cpu_limit}
       memory: ${otel_collector.memory_limit}
 
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 11
-    targetCPUUtilizationPercentage: 50
-    targetMemoryUtilizationPercentage: 50
-    behavior: {}
-    # scaleDown:
-    #   stabilizationWindowSeconds: 300
-    #  policies:
-    #   - type: Pods
-    #     value: 1
-    #     periodSeconds: 180
-    # scaleUp:
-    #   stabilizationWindowSeconds: 300
-    #   policies:
-    #   - type: Pods
-    #     value: 2
-    #     periodSeconds: 60
-
-    autoscalingTemplate: []
-    keda:
-      annotations:
-      enabled: false
-      # -- Polling interval for metrics data
-      # Checks 30sec periodically for metrics data
-      pollingInterval: "30"
-      # -- Cooldown period for metrics data
-      # Once the load decreased, it will wait for 5 min and downscale
-      cooldownPeriod: "300"
-      # -- Minimum replica count
-      # Should be >= replicaCount specified in values.yaml
-      minReplicaCount: "1"
-      # -- Maximum replica count
-      maxReplicaCount: "5"
-      triggers: []
-signoz-otel-gateway:
+%{ if alertmanager != null && alertmanager.enable }
+alertmanager:
+  enabled: true
+  replicaCount: ${alertmanager.replica_count}
+  resources:
+    requests:
+      cpu: ${alertmanager.cpu_request}
+      memory: ${alertmanager.memory_request}
+    limits:
+      cpu: ${alertmanager.cpu_limit}
+      memory: ${alertmanager.memory_limit}
+  persistence:
+    enabled: true
+    size: ${alertmanager.storage}
+%{ else }
+alertmanager:
   enabled: false
+%{ endif }
