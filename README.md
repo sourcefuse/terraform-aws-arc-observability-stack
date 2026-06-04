@@ -22,6 +22,10 @@
 
 Deploys a full observability stack on Kubernetes — Prometheus, Grafana, Elasticsearch/OpenSearch, Fluentd/Fluent Bit — via Helm charts.
 
+## Architecture
+
+![Architecture Diagram](./static/arch.png)
+
 ## What It Does
 
 - Prometheus and Grafana for metrics and dashboards
