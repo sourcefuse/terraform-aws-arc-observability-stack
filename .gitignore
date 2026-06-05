@@ -6,3 +6,4 @@ terraform.tfvars
 .idea
 .external_momdules
 tracing-sample
+.DS_Store
