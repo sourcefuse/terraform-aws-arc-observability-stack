@@ -69,7 +69,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: gp2
+          storageClassName: ${storage_class}
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
