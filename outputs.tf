@@ -1,11 +1,11 @@
 output "kibana_lb_dns" {
   description = "Kibana ingress loadbalancer DNS"
-  value       = var.search_engine == "elasticsearch" ? module.elasticsearch[0].lb_arn : null
+  value       = var.search_engine == "elasticsearch" ? module.elasticsearch[0].lb_dns : null
 }
 
 output "grafana_lb_dns" {
   description = "Grafana ingress loadbalancer DNS"
-  value       = var.metrics_monitoring_system == "prometheus" ? module.prometheus[0].lb_arn : null
+  value       = var.metrics_monitoring_system == "prometheus" ? module.prometheus[0].lb_dns : null
 }
 
 output "signoz_lb_dns" {
