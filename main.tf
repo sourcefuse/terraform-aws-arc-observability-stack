@@ -89,8 +89,10 @@ module "prometheus" {
   log_level                 = var.prometheus_config.log_level
   replica_count             = var.prometheus_config.replica_count
   storage                   = var.prometheus_config.storage
+  storage_class             = var.prometheus_config.storage_class
   enable_kube_state_metrics = var.prometheus_config.enable_kube_state_metrics
   enable_node_exporter      = var.prometheus_config.enable_node_exporter
+  retention_period          = var.prometheus_config.retention_period
 
   resources = {
     cpu_limit      = var.prometheus_config.cpu_limit

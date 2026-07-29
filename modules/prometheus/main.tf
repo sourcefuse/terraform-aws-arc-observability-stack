@@ -60,6 +60,15 @@ resource "helm_release" "prometheus" {
     })
   ]
 
+  # kube-prometheus-stack is heavy: on a cold cluster — especially EKS Auto Mode,
+  # where the first node must be provisioned and the Prometheus EBS volume
+  # attached before pods go Ready — the default 5m Helm wait is not enough and
+  # fails with "context deadline exceeded". Allow 15m; clean up on failure so a
+  # re-apply starts from a clean state.
+  timeout         = 900
+  wait            = true
+  cleanup_on_fail = true
+
   force_update = true
   depends_on   = [kubernetes_namespace.this]
 }
